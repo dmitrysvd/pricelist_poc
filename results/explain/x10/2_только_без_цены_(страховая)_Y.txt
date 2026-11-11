@@ -1,0 +1,41 @@
+Limit  (cost=0.86..397.84 rows=50 width=164) (actual time=0.024..0.331 rows=50.00 loops=1)
+  Buffers: shared hit=694
+  ->  Nested Loop Anti Join  (cost=0.86..2710735.31 rows=341419 width=164) (actual time=0.024..0.328 rows=50.00 loops=1)
+        Buffers: shared hit=694
+        ->  Index Only Scan using service_page_idx on service s  (cost=0.43..31556.61 rows=806546 width=100) (actual time=0.008..0.019 rows=116.00 loops=1)
+              Index Cond: ((branch_id = '1'::smallint) AND (ROW(category_sort, code, name, id) > ROW('520'::smallint, 'A0520.043999'::text, 'Услуга 043999 приём/исследование/процедура'::text, 44000)))
+              Heap Fetches: 0
+              Index Searches: 1
+              Buffers: shared hit=6
+        ->  Index Only Scan using y_value_actual_uq on y_value v  (cost=0.43..0.50 rows=1 width=8) (actual time=0.001..0.001 rows=0.57 loops=116)
+              Index Cond: ((service_id = s.id) AND (price_type_id = '2'::smallint))
+              Filter: (value IS NOT NULL)
+              Heap Fetches: 0
+              Index Searches: 116
+              Buffers: shared hit=349
+        SubPlan 1
+          ->  Aggregate  (cost=1.66..1.67 rows=1 width=32) (actual time=0.003..0.003 rows=1.00 loops=50)
+                Buffers: shared hit=239
+                ->  Index Only Scan using y_value_actual_uq on y_value v_1  (cost=0.43..1.64 rows=6 width=16) (actual time=0.001..0.001 rows=2.86 loops=50)
+                      Index Cond: (service_id = s.id)
+                      Filter: (value IS NOT NULL)
+                      Heap Fetches: 0
+                      Index Searches: 50
+                      Buffers: shared hit=239
+        SubPlan 2
+          ->  Aggregate  (cost=4.97..4.98 rows=1 width=32) (actual time=0.001..0.001 rows=1.00 loops=50)
+                Buffers: shared hit=100
+                ->  Nested Loop  (cost=0.53..4.97 rows=1 width=24) (actual time=0.001..0.001 rows=0.00 loops=50)
+                      Buffers: shared hit=100
+                      ->  Index Scan using y_value_scheduled_uq on y_value v_2  (cost=0.25..2.47 rows=1 width=24) (actual time=0.000..0.000 rows=0.00 loops=50)
+                            Index Cond: (service_id = s.id)
+                            Index Searches: 50
+                            Buffers: shared hit=100
+                      ->  Index Scan using y_version_pkey on y_version ver  (cost=0.28..2.49 rows=1 width=16) (never executed)
+                            Index Cond: (id = v_2.version_id)
+                            Index Searches: 0
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=32
+Planning Time: 0.238 ms
+Execution Time: 0.351 ms

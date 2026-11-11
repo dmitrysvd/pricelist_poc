@@ -1,0 +1,7 @@
+.venv/
+.pgsock/
+__pycache__/
+*.pyc
+# логи прогонов и отладочные (smoke) результаты не нужны для отчёта
+results/logs/
+results/raw/*smoke*

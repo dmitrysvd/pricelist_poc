@@ -1,0 +1,62 @@
+Nested Loop Left Join  (cost=6.68..21.57 rows=1 width=72) (actual time=0.315..0.317 rows=1.00 loops=1)
+  Buffers: shared hit=80
+  CTE v
+    ->  Index Scan using x_version_pkey on x_version  (cost=0.28..2.49 rows=1 width=8) (actual time=0.001..0.002 rows=1.00 loops=1)
+          Index Cond: (id = '369'::smallint)
+          Index Searches: 1
+          Buffers: shared hit=3
+  ->  Limit  (cost=1.27..9.09 rows=1 width=48) (actual time=0.034..0.035 rows=1.00 loops=1)
+        Buffers: shared hit=47
+        ->  Nested Loop  (cost=1.27..24.73 rows=3 width=48) (actual time=0.034..0.035 rows=1.00 loops=1)
+              Join Filter: (((r.price_overrides ->> '4'::text))::numeric IS DISTINCT FROM ((r_1.price_overrides ->> '4'::text))::numeric)
+              Rows Removed by Join Filter: 7
+              Buffers: shared hit=47
+              ->  Nested Loop  (cost=0.42..11.74 rows=3 width=76) (actual time=0.011..0.016 rows=8.00 loops=1)
+                    Join Filter: (r.valid_from > v.t)
+                    Rows Removed by Join Filter: 5
+                    Buffers: shared hit=19
+                    ->  Index Scan using x_row_service_vf_idx on x_row r  (cost=0.42..11.53 rows=9 width=76) (actual time=0.004..0.009 rows=13.00 loops=1)
+                          Index Cond: (service_id = '15229'::smallint)
+                          Filter: ((child_id IS NOT NULL) OR (valid_from <= now()))
+                          Index Searches: 1
+                          Buffers: shared hit=16
+                    ->  CTE Scan on v  (cost=0.00..0.02 rows=1 width=8) (actual time=0.000..0.000 rows=1.00 loops=13)
+                          Storage: Memory  Maximum Storage: 17kB
+                          Buffers: shared hit=3
+              ->  Materialize  (cost=0.85..12.88 rows=1 width=60) (actual time=0.002..0.002 rows=1.00 loops=8)
+                    Storage: Memory  Maximum Storage: 17kB
+                    Buffers: shared hit=28
+                    ->  Nested Loop Left Join  (cost=0.85..12.87 rows=1 width=60) (actual time=0.012..0.013 rows=1.00 loops=1)
+                          Filter: ((c.id IS NULL) OR (c.valid_from > v_1.t))
+                          Rows Removed by Filter: 4
+                          Buffers: shared hit=28
+                          ->  Nested Loop  (cost=0.42..4.91 rows=3 width=76) (actual time=0.002..0.004 rows=5.00 loops=1)
+                                Buffers: shared hit=8
+                                ->  CTE Scan on v v_1  (cost=0.00..0.02 rows=1 width=8) (actual time=0.000..0.000 rows=1.00 loops=1)
+                                      Storage: Memory  Maximum Storage: 17kB
+                                ->  Index Scan using x_row_service_vf_idx on x_row r_1  (cost=0.42..4.86 rows=3 width=76) (actual time=0.002..0.003 rows=5.00 loops=1)
+                                      Index Cond: ((service_id = '15229'::smallint) AND (valid_from <= v_1.t))
+                                      Index Searches: 1
+                                      Buffers: shared hit=8
+                          ->  Index Scan using x_row_pkey on x_row c  (cost=0.42..2.64 rows=1 width=16) (actual time=0.001..0.001 rows=1.00 loops=5)
+                                Index Cond: (id = r_1.child_id)
+                                Index Searches: 5
+                                Buffers: shared hit=20
+  ->  Limit  (cost=2.91..9.98 rows=1 width=24) (actual time=0.280..0.280 rows=1.00 loops=1)
+        Buffers: shared hit=33
+        InitPlan 2
+          ->  Index Scan using service_pkey on service  (cost=0.42..2.64 rows=1 width=8) (actual time=0.002..0.002 rows=1.00 loops=1)
+                Index Cond: (id = '15229'::smallint)
+                Index Searches: 1
+                Buffers: shared hit=4
+        ->  Index Scan Backward using x_version_branch_created_idx on x_version xv  (cost=0.28..42.67 rows=6 width=24) (actual time=0.277..0.277 rows=1.00 loops=1)
+              Index Cond: ((branch_id = (InitPlan 2).col1) AND (created_at <= r.valid_from))
+              Filter: (r.id = ANY (row_ids))
+              Rows Removed by Filter: 10
+              Index Searches: 1
+              Buffers: shared hit=29
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=15
+Planning Time: 0.303 ms
+Execution Time: 0.335 ms

@@ -1,0 +1,18 @@
+Limit  (cost=0.71..58.60 rows=50 width=42) (actual time=0.008..0.074 rows=50.00 loops=1)
+  Buffers: shared hit=199
+  ->  Nested Loop Semi Join  (cost=0.71..365.45 rows=315 width=42) (actual time=0.008..0.071 rows=50.00 loops=1)
+        Buffers: shared hit=199
+        ->  Index Scan Backward using y_version_branch_created_idx on y_version v  (cost=0.28..25.66 rows=715 width=42) (actual time=0.005..0.009 rows=65.00 loops=1)
+              Index Cond: (branch_id = '1'::smallint)
+              Index Searches: 1
+              Buffers: shared hit=3
+        ->  Index Only Scan using y_value_version_idx on y_value x  (cost=0.43..4.99 rows=180 width=8) (actual time=0.001..0.001 rows=0.77 loops=65)
+              Index Cond: ((version_id = v.id) AND (price_type_id = '2'::smallint))
+              Heap Fetches: 0
+              Index Searches: 65
+              Buffers: shared hit=196
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=14
+Planning Time: 0.101 ms
+Execution Time: 0.083 ms

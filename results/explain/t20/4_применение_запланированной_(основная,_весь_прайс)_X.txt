@@ -1,0 +1,104 @@
+Update on x_version  (cost=563.26..565.47 rows=1 width=14) (actual time=1245.628..1245.636 rows=1.00 loops=1)
+  Buffers: shared hit=2230484 dirtied=3491 written=3491
+  I/O Timings: shared write=21.031
+  WAL: records=428231 fpi=1 bytes=54955810 buffers full=440
+  CTE v
+    ->  Index Scan using x_version_pkey on x_version x_version_1  (cost=0.28..2.49 rows=1 width=479) (actual time=0.002..0.004 rows=1.00 loops=1)
+          Index Cond: (id = '770'::smallint)
+          Index Searches: 1
+          Buffers: shared hit=4
+  CTE new
+    ->  Nested Loop  (cost=0.82..130.49 rows=49 width=289) (actual time=15.957..194.114 rows=85000.00 loops=1)
+          Buffers: shared hit=340042
+          ->  HashAggregate  (cost=0.39..0.89 rows=49 width=8) (actual time=15.947..32.911 rows=85000.00 loops=1)
+                Group Key: unnest(v.row_ids)
+                Batches: 1  Memory Usage: 4145kB
+                Buffers: shared hit=42
+                ->  ProjectSet  (cost=0.00..0.27 rows=49 width=8) (actual time=0.452..4.277 rows=85000.00 loops=1)
+                      Buffers: shared hit=42
+                      ->  CTE Scan on v  (cost=0.00..0.02 rows=1 width=32) (actual time=0.003..0.005 rows=1.00 loops=1)
+                            Storage: Memory  Maximum Storage: 17kB
+                            Buffers: shared hit=4
+          ->  Index Scan using x_row_pkey on x_row r  (cost=0.43..2.65 rows=1 width=289) (actual time=0.002..0.002 rows=1.00 loops=85000)
+                Index Cond: (id = (unnest(v.row_ids)))
+                Index Searches: 85000
+                Buffers: shared hit=340000
+  CTE link
+    ->  Update on x_row cur  (cost=0.42..131.20 rows=43 width=62) (actual time=16.017..1110.772 rows=85000.00 loops=1)
+          Buffers: shared hit=1967350 dirtied=3471 written=3471
+          I/O Timings: shared write=20.845
+          WAL: records=425215 fpi=1 bytes=54595474 buffers full=440
+          ->  Nested Loop  (cost=0.42..131.20 rows=43 width=62) (actual time=15.969..439.889 rows=85000.00 loops=1)
+                Buffers: shared hit=680042
+                ->  CTE Scan on new  (cost=0.00..0.98 rows=49 width=72) (actual time=15.961..234.289 rows=85000.00 loops=1)
+                      Storage: Memory  Maximum Storage: 27514kB
+                      Buffers: shared hit=340042
+                ->  Index Scan using x_row_tail_idx on x_row cur  (cost=0.42..2.65 rows=1 width=30) (actual time=0.002..0.002 rows=1.00 loops=85000)
+                      Index Cond: ((service_id = new.service_id) AND (valid_from <= LEAST(now(), new.valid_from)))
+                      Filter: ((child_id IS NULL) AND (id <> new.id))
+                      Index Searches: 85000
+                      Buffers: shared hit=340000
+  CTE rebase
+    ->  Update on x_row q  (cost=0.90..230.44 rows=43 width=199) (actual time=0.490..114.330 rows=499.00 loops=1)
+          Buffers: shared hit=263114 dirtied=20 written=20
+          I/O Timings: shared write=0.186
+          WAL: records=3009 bytes=359762
+          ->  Nested Loop  (cost=0.90..230.44 rows=43 width=199) (actual time=0.463..109.795 rows=499.00 loops=1)
+                Buffers: shared hit=255499
+                ->  Subquery Scan on keys  (cost=0.48..0.50 rows=1 width=90) (actual time=0.015..0.016 rows=1.00 loops=1)
+                      ->  Aggregate  (cost=0.48..0.49 rows=1 width=33) (actual time=0.013..0.014 rows=1.00 loops=1)
+                            ->  Nested Loop  (cost=0.00..0.30 rows=14 width=4) (actual time=0.007..0.008 rows=1.00 loops=1)
+                                  ->  CTE Scan on v v_1  (cost=0.00..0.02 rows=1 width=32) (actual time=0.000..0.001 rows=1.00 loops=1)
+                                        Storage: Memory  Maximum Storage: 17kB
+                                  ->  Function Scan on unnest pt  (cost=0.00..0.14 rows=14 width=4) (actual time=0.006..0.006 rows=1.00 loops=1)
+                ->  Nested Loop  (cost=0.42..130.83 rows=43 width=407) (actual time=0.432..107.375 rows=499.00 loops=1)
+                      Buffers: shared hit=255499
+                      ->  CTE Scan on new new_1  (cost=0.00..0.98 rows=49 width=152) (actual time=0.002..18.020 rows=85000.00 loops=1)
+                            Storage: Memory  Maximum Storage: 27514kB
+                      ->  Index Scan using x_row_tail_idx on x_row q  (cost=0.42..2.64 rows=1 width=287) (actual time=0.001..0.001 rows=0.01 loops=85000)
+                            Index Cond: ((service_id = new_1.service_id) AND (valid_from > new_1.valid_from))
+                            Filter: (child_id IS NULL)
+                            Index Searches: 85000
+                            Buffers: shared hit=255499
+                SubPlan 4
+                  ->  Aggregate  (cost=2.28..2.29 rows=1 width=32) (actual time=0.003..0.003 rows=1.00 loops=499)
+                        ->  Function Scan on jsonb_each e  (cost=0.00..2.25 rows=10 width=64) (actual time=0.003..0.003 rows=0.00 loops=499)
+                              Filter: (key = ANY (keys.k))
+                              Rows Removed by Filter: 12
+  CTE demote
+    ->  Update on x_version x_version_2  (cost=0.00..66.40 rows=0 width=0) (actual time=0.148..0.148 rows=0.00 loops=1)
+          Buffers: shared hit=59
+          WAL: records=2 bytes=133
+          ->  Seq Scan on x_version x_version_2  (cost=0.00..66.40 rows=2 width=14) (actual time=0.133..0.133 rows=1.00 loops=1)
+                Filter: ((branch_id = '1'::smallint) AND ((status)::text = 'A'::text))
+                Rows Removed by Filter: 769
+                Buffers: shared hit=55
+  InitPlan 7
+    ->  Aggregate  (cost=0.97..0.98 rows=1 width=8) (actual time=1131.065..1131.066 rows=1.00 loops=1)
+          Buffers: shared hit=1967350 dirtied=3471 written=3471
+          I/O Timings: shared write=20.845
+          WAL: records=425215 fpi=1 bytes=54595474 buffers full=440
+          ->  CTE Scan on link  (cost=0.00..0.86 rows=43 width=0) (actual time=16.018..1123.936 rows=85000.00 loops=1)
+                Storage: Memory  Maximum Storage: 3681kB
+                Buffers: shared hit=1967350 dirtied=3471 written=3471
+                I/O Timings: shared write=20.845
+                WAL: records=425215 fpi=1 bytes=54595474 buffers full=440
+  InitPlan 8
+    ->  Aggregate  (cost=0.97..0.98 rows=1 width=8) (actual time=114.515..114.516 rows=1.00 loops=1)
+          Buffers: shared hit=263114 dirtied=20 written=20
+          I/O Timings: shared write=0.186
+          WAL: records=3009 bytes=359762
+          ->  CTE Scan on rebase  (cost=0.00..0.86 rows=43 width=0) (actual time=0.491..114.436 rows=499.00 loops=1)
+                Storage: Memory  Maximum Storage: 32kB
+                Buffers: shared hit=263114 dirtied=20 written=20
+                I/O Timings: shared write=0.186
+                WAL: records=3009 bytes=359762
+  ->  Index Scan using x_version_pkey on x_version  (cost=0.28..2.49 rows=1 width=14) (actual time=0.005..0.005 rows=1.00 loops=1)
+        Index Cond: (id = '770'::smallint)
+        Index Searches: 1
+        Buffers: shared hit=3
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=30
+Planning Time: 0.405 ms
+Execution Time: 1246.551 ms

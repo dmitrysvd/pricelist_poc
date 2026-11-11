@@ -1,0 +1,22 @@
+Insert on service  (cost=1.41..2451.14 rows=0 width=0) (actual time=495.763..495.765 rows=0.00 loops=1)
+  Buffers: shared hit=865460 dirtied=1216 written=1216
+  I/O Timings: shared write=6.474
+  WAL: records=432693 fpi=1 bytes=45858528 buffers full=1415
+  ->  Hash Join  (cost=1.41..2451.14 rows=56 width=663) (actual time=0.197..43.181 rows=85000.00 loops=1)
+        Hash Cond: (st.category = (c.name)::text)
+        Buffers: shared hit=86293
+        WAL: records=2576 bytes=255024 buffers full=12
+        ->  Seq Scan on import_staging st  (cost=0.00..2130.00 rows=85000 width=81) (actual time=0.003..4.718 rows=85000.00 loops=1)
+              Buffers: shared hit=1280
+        ->  Hash  (cost=1.40..1.40 rows=1 width=36) (actual time=0.189..0.190 rows=1000.00 loops=1)
+              Buckets: 1024  Batches: 1  Memory Usage: 79kB
+              Buffers: shared hit=13
+              ->  Index Scan using category_branch_id_7d854c12 on category c  (cost=0.28..1.40 rows=1 width=36) (actual time=0.006..0.093 rows=1000.00 loops=1)
+                    Index Cond: (branch_id = '3'::smallint)
+                    Index Searches: 1
+                    Buffers: shared hit=13
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=5
+Planning Time: 0.184 ms
+Execution Time: 496.874 ms

@@ -1,0 +1,23 @@
+Nested Loop Left Join  (cost=1.29..48.00 rows=10 width=112) (actual time=0.010..0.056 rows=10.00 loops=1)
+  Buffers: shared hit=102
+  ->  Nested Loop  (cost=0.86..32.38 rows=10 width=104) (actual time=0.008..0.044 rows=10.00 loops=1)
+        Buffers: shared hit=71
+        ->  Index Scan using service_pkey on service s  (cost=0.43..16.55 rows=10 width=96) (actual time=0.004..0.019 rows=10.00 loops=1)
+              Index Cond: (id = ANY ('{183422,809713,474815,49445,658430,63302,139221,50640,781941,388767}'::integer[]))
+              Index Searches: 10
+              Buffers: shared hit=40
+        ->  Index Only Scan using y_value_actual_uq on y_value m  (cost=0.43..1.56 rows=2 width=16) (actual time=0.002..0.002 rows=1.00 loops=10)
+              Index Cond: ((service_id = s.id) AND (price_type_id = '1'::smallint))
+              Heap Fetches: 0
+              Index Searches: 10
+              Buffers: shared hit=31
+  ->  Index Only Scan using y_value_actual_uq on y_value i  (cost=0.43..1.55 rows=1 width=16) (actual time=0.001..0.001 rows=0.50 loops=10)
+        Index Cond: ((service_id = s.id) AND (price_type_id = '2'::smallint))
+        Heap Fetches: 0
+        Index Searches: 10
+        Buffers: shared hit=31
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=36
+Planning Time: 0.184 ms
+Execution Time: 0.066 ms

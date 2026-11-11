@@ -1,0 +1,39 @@
+Update on x_version  (cost=2452.52..2454.74 rows=0 width=0) (actual time=636.874..636.876 rows=0.00 loops=1)
+  Buffers: shared hit=888953 dirtied=35 written=35
+  I/O Timings: shared write=0.145
+  WAL: records=431178 bytes=33778739 buffers full=3312
+  CTE ins
+    ->  Insert on x_row  (cost=1.56..2450.32 rows=1 width=70) (actual time=21.643..563.600 rows=85000.00 loops=1)
+          Buffers: shared hit=888438
+          WAL: records=430898 bytes=33484082 buffers full=3312
+          ->  Hash Join  (cost=1.56..2450.32 rows=1 width=70) (actual time=21.593..71.546 rows=85000.00 loops=1)
+                Hash Cond: (st.code = (s.code)::text)
+                Buffers: shared hit=89246
+                WAL: records=2576 bytes=255024 buffers full=25
+                ->  Seq Scan on import_staging st  (cost=0.00..2130.00 rows=85000 width=14) (actual time=0.003..4.055 rows=85000.00 loops=1)
+                      Buffers: shared hit=1280
+                ->  Hash  (cost=1.54..1.54 rows=1 width=21) (actual time=21.584..21.584 rows=85000.00 loops=1)
+                      Buckets: 131072 (originally 1024)  Batches: 1 (originally 1)  Memory Usage: 5009kB
+                      Buffers: shared hit=2966
+                      ->  Index Scan using service_branch_id_949e182d on service s  (cost=0.42..1.54 rows=1 width=21) (actual time=5.357..13.221 rows=85000.00 loops=1)
+                            Index Cond: (branch_id = '3'::smallint)
+                            Index Searches: 1
+                            Buffers: shared hit=2966
+  InitPlan 2
+    ->  CTE Scan on ins  (cost=0.00..0.02 rows=1 width=8) (actual time=21.643..577.792 rows=85000.00 loops=1)
+          Storage: Memory  Maximum Storage: 3681kB
+          Buffers: shared hit=888438
+          WAL: records=430898 bytes=33484082 buffers full=3312
+  InitPlan 3
+    ->  Seq Scan on price_type  (cost=0.00..1.90 rows=1 width=4) (actual time=0.009..0.010 rows=1.00 loops=1)
+          Filter: ((branch_id = '3'::smallint) AND ((kind)::text = 'main'::text))
+          Rows Removed by Filter: 59
+          Buffers: shared hit=1
+  ->  Index Scan using x_version_pkey on x_version  (cost=0.28..2.49 rows=1 width=70) (actual time=582.677..582.678 rows=1.00 loops=1)
+        Index Cond: (id = '775'::smallint)
+        Index Searches: 1
+        Buffers: shared hit=888442
+        WAL: records=430898 bytes=33484082 buffers full=3312
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning Time: 0.101 ms
+Execution Time: 638.565 ms

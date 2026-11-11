@@ -1,0 +1,24 @@
+Insert on y_value  (cost=2.60..2451.36 rows=0 width=0) (actual time=486.749..486.751 rows=0.00 loops=1)
+  Buffers: shared hit=622497
+  WAL: records=516440 bytes=41235567 buffers full=2168
+  InitPlan 1
+    ->  Seq Scan on price_type  (cost=0.00..1.04 rows=1 width=8) (actual time=0.006..0.006 rows=1.00 loops=1)
+          Filter: ((branch_id = '3'::smallint) AND ((kind)::text = 'main'::text))
+          Rows Removed by Filter: 2
+          Buffers: shared hit=1
+  ->  Hash Join  (cost=1.55..2450.32 rows=1 width=62) (actual time=22.309..70.923 rows=85000.00 loops=1)
+        Hash Cond: (st.code = (s.code)::text)
+        Buffers: shared hit=89628
+        WAL: records=2576 bytes=255024 buffers full=17
+        ->  Seq Scan on import_staging st  (cost=0.00..2130.00 rows=85000 width=14) (actual time=0.003..3.991 rows=85000.00 loops=1)
+              Buffers: shared hit=1280
+        ->  Hash  (cost=1.54..1.54 rows=1 width=21) (actual time=22.287..22.288 rows=85000.00 loops=1)
+              Buckets: 131072 (originally 1024)  Batches: 1 (originally 1)  Memory Usage: 5009kB
+              Buffers: shared hit=3347
+              ->  Index Scan using service_branch_id_949e182d on service s  (cost=0.42..1.54 rows=1 width=21) (actual time=5.800..14.039 rows=85000.00 loops=1)
+                    Index Cond: (branch_id = '3'::smallint)
+                    Index Searches: 1
+                    Buffers: shared hit=3347
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning Time: 0.088 ms
+Execution Time: 489.234 ms

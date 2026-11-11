@@ -1,0 +1,23 @@
+Delete on x_row r  (cost=0.70..130.18 rows=0 width=0) (actual time=132.574..132.575 rows=0.00 loops=1)
+  Buffers: shared hit=507754
+  WAL: records=84500 bytes=4563000
+  ->  Nested Loop  (cost=0.70..130.18 rows=48 width=38) (actual time=0.439..96.514 rows=84500.00 loops=1)
+        Buffers: shared hit=338049
+        ->  Subquery Scan on d  (cost=0.28..3.22 rows=48 width=40) (actual time=0.434..15.184 rows=84500.00 loops=1)
+              Buffers: shared hit=49
+              ->  ProjectSet  (cost=0.28..2.74 rows=48 width=8) (actual time=0.432..4.867 rows=84500.00 loops=1)
+                    Buffers: shared hit=49
+                    ->  Index Scan using x_version_pkey on x_version  (cost=0.28..2.50 rows=1 width=391) (actual time=0.005..0.006 rows=1.00 loops=1)
+                          Index Cond: (id = '786'::smallint)
+                          Filter: ((status)::text = 'S'::text)
+                          Index Searches: 1
+                          Buffers: shared hit=3
+        ->  Index Scan using x_row_pkey on x_row r  (cost=0.43..2.65 rows=1 width=14) (actual time=0.001..0.001 rows=1.00 loops=84500)
+              Index Cond: (id = d.id)
+              Index Searches: 84500
+              Buffers: shared hit=338000
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=8
+Planning Time: 0.092 ms
+Execution Time: 133.123 ms

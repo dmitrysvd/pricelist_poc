@@ -1,0 +1,21 @@
+Nested Loop Left Join  (cost=0.84..33.37 rows=9 width=112) (actual time=0.010..0.047 rows=10.00 loops=1)
+  Join Filter: false
+  Buffers: shared hit=71
+  ->  Nested Loop  (cost=0.84..33.28 rows=9 width=104) (actual time=0.010..0.044 rows=10.00 loops=1)
+        Buffers: shared hit=71
+        ->  Index Scan using service_pkey on service s  (cost=0.42..16.48 rows=10 width=96) (actual time=0.004..0.019 rows=10.00 loops=1)
+              Index Cond: (id = ANY ('{22928,59352,6181,82304,7913,17403,6330,48596,63066,34117}'::integer[]))
+              Index Searches: 10
+              Buffers: shared hit=40
+        ->  Index Only Scan using y_value_actual_uq on y_value m  (cost=0.42..1.66 rows=2 width=16) (actual time=0.002..0.002 rows=1.00 loops=10)
+              Index Cond: ((service_id = s.id) AND (price_type_id = '1'::smallint))
+              Heap Fetches: 0
+              Index Searches: 10
+              Buffers: shared hit=31
+  ->  Result  (cost=0.00..0.00 rows=0 width=8) (actual time=0.000..0.000 rows=0.00 loops=10)
+        One-Time Filter: false
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=16
+Planning Time: 0.111 ms
+Execution Time: 0.055 ms

@@ -1,0 +1,22 @@
+Limit  (cost=3.33..7.78 rows=1 width=32) (actual time=0.007..0.008 rows=1.00 loops=1)
+  Buffers: shared hit=11
+  InitPlan 1
+    ->  Index Scan using y_version_pkey on y_version  (cost=0.28..2.49 rows=1 width=8) (actual time=0.002..0.002 rows=1.00 loops=1)
+          Index Cond: (id = '382'::smallint)
+          Index Searches: 1
+          Buffers: shared hit=3
+  ->  Nested Loop  (cost=0.84..5.28 rows=1 width=32) (actual time=0.007..0.007 rows=1.00 loops=1)
+        Buffers: shared hit=11
+        ->  Index Scan using y_value_slice_idx on y_value v  (cost=0.56..2.79 rows=1 width=24) (actual time=0.005..0.005 rows=1.00 loops=1)
+              Index Cond: ((service_id = 136673) AND (price_type_id = '3'::smallint) AND (ver > (InitPlan 1).col1))
+              Index Searches: 1
+              Buffers: shared hit=8
+        ->  Index Scan using y_version_pkey on y_version ver  (cost=0.28..2.49 rows=1 width=24) (actual time=0.001..0.001 rows=1.00 loops=1)
+              Index Cond: (id = v.version_id)
+              Index Searches: 1
+              Buffers: shared hit=3
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=14
+Planning Time: 0.104 ms
+Execution Time: 0.016 ms

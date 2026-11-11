@@ -1,0 +1,18 @@
+Limit  (cost=10.68..10.80 rows=48 width=42) (actual time=0.019..0.023 rows=48.00 loops=1)
+  Buffers: shared hit=8
+  ->  Sort  (cost=10.68..10.80 rows=48 width=42) (actual time=0.019..0.020 rows=48.00 loops=1)
+        Sort Key: created_at DESC
+        Sort Method: quicksort  Memory: 28kB
+        Buffers: shared hit=8
+        ->  Bitmap Heap Scan on y_version v  (cost=1.62..9.34 rows=48 width=42) (actual time=0.007..0.013 rows=48.00 loops=1)
+              Recheck Cond: (author_id = '12'::smallint)
+              Filter: (branch_id = '1'::smallint)
+              Heap Blocks: exact=7
+              Buffers: shared hit=8
+              ->  Bitmap Index Scan on y_version_author_id_fcfd8903  (cost=0.00..1.61 rows=48 width=0) (actual time=0.003..0.003 rows=48.00 loops=1)
+                    Index Cond: (author_id = '12'::smallint)
+                    Index Searches: 1
+                    Buffers: shared hit=1
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning Time: 0.033 ms
+Execution Time: 0.030 ms

@@ -1,0 +1,33 @@
+Update on x_version  (cost=2.66..4.87 rows=0 width=0) (actual time=0.076..0.076 rows=0.00 loops=1)
+  Buffers: shared hit=40
+  WAL: records=15 bytes=1204
+  CTE demote
+    ->  Update on x_version x_version_1  (cost=0.13..2.35 rows=1 width=14) (actual time=0.049..0.050 rows=1.00 loops=1)
+          Buffers: shared hit=19
+          WAL: records=7 bytes=566
+          ->  Index Scan using x_version_current_uq on x_version x_version_1  (cost=0.13..2.35 rows=1 width=14) (actual time=0.004..0.004 rows=1.00 loops=1)
+                Index Cond: (branch_id = '1'::smallint)
+                Filter: ((status)::text = 'A'::text)
+                Index Searches: 1
+                Buffers: shared hit=2
+  InitPlan 2
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=0.052..0.052 rows=1.00 loops=1)
+          Buffers: shared hit=19
+          WAL: records=7 bytes=566
+          ->  CTE Scan on demote  (cost=0.00..0.02 rows=1 width=0) (actual time=0.050..0.051 rows=1.00 loops=1)
+                Storage: Memory  Maximum Storage: 17kB
+                Buffers: shared hit=19
+                WAL: records=7 bytes=566
+  ->  Result  (cost=0.28..2.49 rows=1 width=14) (actual time=0.055..0.056 rows=1.00 loops=1)
+        One-Time Filter: ((InitPlan 2).col1 >= 0)
+        Buffers: shared hit=22
+        WAL: records=7 bytes=566
+        ->  Index Scan using x_version_pkey on x_version  (cost=0.28..2.49 rows=1 width=6) (actual time=0.002..0.003 rows=1.00 loops=1)
+              Index Cond: (id = '787'::smallint)
+              Index Searches: 1
+              Buffers: shared hit=3
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=4
+Planning Time: 0.093 ms
+Execution Time: 0.101 ms

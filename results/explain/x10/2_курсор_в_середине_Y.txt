@@ -1,0 +1,33 @@
+Limit  (cost=0.43..334.80 rows=50 width=164) (actual time=0.018..0.226 rows=50.00 loops=1)
+  Buffers: shared hit=343
+  ->  Index Only Scan using service_page_idx on service s  (cost=0.43..3192983.55 rows=477457 width=164) (actual time=0.018..0.223 rows=50.00 loops=1)
+        Index Cond: ((branch_id = '1'::smallint) AND (ROW(category_sort, code, name, id) > ROW('4374'::smallint, 'A4374.371999'::text, 'Услуга 371999 приём/исследование/процедура'::text, 372000)))
+        Heap Fetches: 0
+        Index Searches: 1
+        Buffers: shared hit=343
+        SubPlan 1
+          ->  Aggregate  (cost=1.66..1.67 rows=1 width=32) (actual time=0.003..0.003 rows=1.00 loops=50)
+                Buffers: shared hit=238
+                ->  Index Only Scan using y_value_actual_uq on y_value v  (cost=0.43..1.64 rows=6 width=16) (actual time=0.001..0.001 rows=3.28 loops=50)
+                      Index Cond: (service_id = s.id)
+                      Filter: (value IS NOT NULL)
+                      Heap Fetches: 0
+                      Index Searches: 50
+                      Buffers: shared hit=238
+        SubPlan 2
+          ->  Aggregate  (cost=4.97..4.98 rows=1 width=32) (actual time=0.001..0.001 rows=1.00 loops=50)
+                Buffers: shared hit=100
+                ->  Nested Loop  (cost=0.53..4.97 rows=1 width=24) (actual time=0.001..0.001 rows=0.00 loops=50)
+                      Buffers: shared hit=100
+                      ->  Index Scan using y_value_scheduled_uq on y_value v_1  (cost=0.25..2.47 rows=1 width=24) (actual time=0.000..0.000 rows=0.00 loops=50)
+                            Index Cond: (service_id = s.id)
+                            Index Searches: 50
+                            Buffers: shared hit=100
+                      ->  Index Scan using y_version_pkey on y_version ver  (cost=0.28..2.49 rows=1 width=16) (never executed)
+                            Index Cond: (id = v_1.version_id)
+                            Index Searches: 0
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=14
+Planning Time: 0.169 ms
+Execution Time: 0.245 ms

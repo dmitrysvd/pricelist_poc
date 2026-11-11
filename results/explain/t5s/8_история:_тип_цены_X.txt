@@ -1,0 +1,13 @@
+Limit  (cost=68.18..68.27 rows=37 width=34) (actual time=0.242..0.247 rows=50.00 loops=1)
+  Buffers: shared hit=53
+  ->  Sort  (cost=68.18..68.27 rows=37 width=34) (actual time=0.241..0.243 rows=50.00 loops=1)
+        Sort Key: created_at DESC
+        Sort Method: top-N heapsort  Memory: 32kB
+        Buffers: shared hit=53
+        ->  Seq Scan on x_version v  (cost=0.00..67.21 rows=37 width=34) (actual time=0.004..0.123 rows=701.00 loops=1)
+              Filter: ((branch_id = '1'::smallint) AND ('2'::smallint = ANY (price_type_ids)))
+              Rows Removed by Filter: 57
+              Buffers: shared hit=53
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning Time: 0.035 ms
+Execution Time: 0.255 ms

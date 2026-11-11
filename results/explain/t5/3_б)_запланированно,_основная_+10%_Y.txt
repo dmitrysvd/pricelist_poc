@@ -1,0 +1,37 @@
+Insert on y_value  (cost=4160.76..15588.36 rows=0 width=0) (actual time=511.827..511.829 rows=0.00 loops=1)
+  Buffers: shared hit=955115
+  WAL: records=514958 bytes=39614731 buffers full=1047
+  ->  Hash Join  (cost=4160.76..15588.36 rows=72091 width=72) (actual time=16.684..102.380 rows=85000.00 loops=1)
+        Hash Cond: (v.service_id = s.id)
+        Buffers: shared hit=90738
+        WAL: records=2576 bytes=255024 buffers full=8
+        ->  Merge Anti Join  (cost=0.82..10146.82 rows=144935 width=24) (actual time=0.254..26.875 rows=85000.00 loops=1)
+              Merge Cond: (v.service_id = q.service_id)
+              Buffers: shared hit=4124
+              ->  Index Only Scan using y_value_actual_uq on y_value v  (cost=0.42..9105.33 rows=145114 width=24) (actual time=0.014..20.459 rows=85000.00 loops=1)
+                    Index Cond: (price_type_id = '1'::smallint)
+                    Filter: (value IS NOT NULL)
+                    Heap Fetches: 0
+                    Index Searches: 1
+                    Buffers: shared hit=3780
+              ->  Materialize  (cost=0.40..676.34 rows=125 width=16) (actual time=0.238..0.239 rows=0.00 loops=1)
+                    Storage: Memory  Maximum Storage: 17kB
+                    Buffers: shared hit=344
+                    ->  Index Only Scan using y_value_scheduled_uq on y_value q  (cost=0.40..676.02 rows=125 width=16) (actual time=0.238..0.238 rows=0.00 loops=1)
+                          Index Cond: (price_type_id = '1'::smallint)
+                          Heap Fetches: 0
+                          Index Searches: 1
+                          Buffers: shared hit=344
+        ->  Hash  (cost=3102.96..3102.96 rows=84558 width=8) (actual time=16.347..16.347 rows=85000.00 loops=1)
+              Buckets: 131072  Batches: 1  Memory Usage: 4345kB
+              Buffers: shared hit=1614
+              ->  Index Scan using service_branch_id_949e182d on service s  (cost=0.29..3102.96 rows=84558 width=8) (actual time=0.013..8.655 rows=85000.00 loops=1)
+                    Index Cond: (branch_id = '1'::smallint)
+                    Filter: (NOT archived)
+                    Index Searches: 1
+                    Buffers: shared hit=1614
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=47
+Planning Time: 0.342 ms
+Execution Time: 514.153 ms

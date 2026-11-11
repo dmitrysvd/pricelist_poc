@@ -1,0 +1,41 @@
+Sort  (cost=5449.08..5451.58 rows=1000 width=125) (actual time=2.037..2.058 rows=621.00 loops=1)
+  Sort Key: s.category_sort, s.code, s.name, s.id, pt.id
+  Sort Method: quicksort  Memory: 107kB
+  Buffers: shared hit=5550
+  ->  Nested Loop Left Join  (cost=1.56..5399.25 rows=1000 width=125) (actual time=0.026..1.882 rows=621.00 loops=1)
+        Join Filter: (v.ver = y_version.number)
+        Buffers: shared hit=5550
+        ->  Nested Loop  (cost=1.13..2734.25 rows=1000 width=140) (actual time=0.023..1.378 rows=621.00 loops=1)
+              Buffers: shared hit=3637
+              ->  Index Scan using y_version_number_key on y_version  (cost=0.28..26.23 rows=1 width=8) (actual time=0.008..0.049 rows=1.00 loops=1)
+                    Filter: (id = '47'::smallint)
+                    Rows Removed by Filter: 768
+                    Index Searches: 1
+                    Buffers: shared hit=11
+              ->  Nested Loop  (cost=0.85..2698.01 rows=1000 width=132) (actual time=0.014..1.282 rows=621.00 loops=1)
+                    Buffers: shared hit=3626
+                    ->  Limit  (cost=0.42..2.39 rows=50 width=100) (actual time=0.008..0.020 rows=50.00 loops=1)
+                          Buffers: shared hit=5
+                          ->  Index Only Scan using service_page_idx on service s  (cost=0.42..2416.64 rows=61369 width=100) (actual time=0.008..0.017 rows=50.00 loops=1)
+                                Index Cond: ((branch_id = '1'::smallint) AND (ROW(category_sort, code, name, id) > ROW('283'::smallint, 'A0283.023999'::text, 'Услуга 023999 приём/исследование/процедура'::text, '24000'::smallint)))
+                                Heap Fetches: 0
+                                Index Searches: 1
+                                Buffers: shared hit=5
+                    ->  Nested Loop  (cost=0.43..53.70 rows=20 width=32) (actual time=0.002..0.024 rows=12.42 loops=50)
+                          Buffers: shared hit=3621
+                          ->  Function Scan on unnest pt  (cost=0.00..0.20 rows=20 width=8) (actual time=0.000..0.001 rows=20.00 loops=50)
+                          ->  Limit  (cost=0.43..2.66 rows=1 width=24) (actual time=0.001..0.001 rows=0.62 loops=1000)
+                                Buffers: shared hit=3621
+                                ->  Index Scan Backward using y_value_slice_idx on y_value v  (cost=0.43..2.66 rows=1 width=24) (actual time=0.001..0.001 rows=0.62 loops=1000)
+                                      Index Cond: ((service_id = s.id) AND (price_type_id = pt.id) AND (ver <= y_version.number))
+                                      Index Searches: 1000
+                                      Buffers: shared hit=3621
+        ->  Index Scan using y_value_next_ver_id_key on y_value prev  (cost=0.43..2.65 rows=1 width=16) (actual time=0.001..0.001 rows=0.08 loops=621)
+              Index Cond: (next_ver_id = v.id)
+              Index Searches: 621
+              Buffers: shared hit=1913
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=8
+Planning Time: 0.215 ms
+Execution Time: 2.111 ms

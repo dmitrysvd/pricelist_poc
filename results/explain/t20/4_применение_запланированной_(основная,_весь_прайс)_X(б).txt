@@ -1,0 +1,18 @@
+Update on x_version  (cost=66.87..69.09 rows=0 width=0) (actual time=0.016..0.017 rows=0.00 loops=1)
+  Buffers: shared hit=7
+  WAL: records=2 bytes=133
+  CTE demote
+    ->  Update on x_version x_version_1  (cost=0.00..66.59 rows=0 width=0) (actual time=0.109..0.109 rows=0.00 loops=1)
+          Buffers: shared hit=59
+          WAL: records=2 bytes=133
+          ->  Seq Scan on x_version x_version_1  (cost=0.00..66.59 rows=2 width=14) (actual time=0.102..0.102 rows=1.00 loops=1)
+                Filter: ((branch_id = '1'::smallint) AND ((status)::text = 'A'::text))
+                Rows Removed by Filter: 770
+                Buffers: shared hit=55
+  ->  Index Scan using x_version_pkey on x_version  (cost=0.28..2.49 rows=1 width=14) (actual time=0.004..0.005 rows=1.00 loops=1)
+        Index Cond: (id = '771'::smallint)
+        Index Searches: 1
+        Buffers: shared hit=3
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning Time: 0.049 ms
+Execution Time: 0.137 ms
