@@ -1,0 +1,18 @@
+Nested Loop  (cost=0.85..6.87 rows=1 width=160) (actual time=0.010..0.011 rows=1.00 loops=1)
+  Join Filter: (v.service_id = s.id)
+  Buffers: shared hit=8
+  ->  Index Scan using service_pkey on service s  (cost=0.42..2.64 rows=1 width=96) (actual time=0.004..0.004 rows=1.00 loops=1)
+        Index Cond: (id = ANY ('{64293}'::integer[]))
+        Index Searches: 1
+        Buffers: shared hit=4
+  ->  GroupAggregate  (cost=0.43..4.21 rows=1 width=72) (actual time=0.005..0.005 rows=1.00 loops=1)
+        Group Key: v.service_id
+        Filter: (max(v.value) FILTER (WHERE (v.price_type_id = '1'::smallint)) IS NOT NULL)
+        Buffers: shared hit=4
+        ->  Index Scan using y3_current_pkey on y3_current v  (cost=0.43..4.19 rows=1 width=23) (actual time=0.003..0.004 rows=1.00 loops=1)
+              Index Cond: ((service_id = ANY ('{64293}'::integer[])) AND (price_type_id = ANY ('{1,2}'::smallint[])))
+              Index Searches: 1
+              Buffers: shared hit=4
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning Time: 0.064 ms
+Execution Time: 0.021 ms

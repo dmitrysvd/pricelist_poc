@@ -1,8 +1,8 @@
-Limit  (cost=0.71..133.01 rows=50 width=42) (actual time=0.009..0.129 rows=50.00 loops=1)
+Limit  (cost=0.71..133.01 rows=50 width=42) (actual time=0.008..0.086 rows=50.00 loops=1)
   Buffers: shared hit=229
-  ->  Nested Loop Semi Join  (cost=0.71..381.73 rows=144 width=42) (actual time=0.009..0.125 rows=50.00 loops=1)
+  ->  Nested Loop Semi Join  (cost=0.71..381.73 rows=144 width=42) (actual time=0.008..0.083 rows=50.00 loops=1)
         Buffers: shared hit=229
-        ->  Index Scan Backward using y_version_branch_created_idx on y_version v  (cost=0.28..27.63 rows=768 width=42) (actual time=0.006..0.014 rows=74.00 loops=1)
+        ->  Index Scan Backward using y_version_branch_created_idx on y_version v  (cost=0.28..27.63 rows=768 width=42) (actual time=0.005..0.011 rows=74.00 loops=1)
               Index Cond: (branch_id = '1'::smallint)
               Index Searches: 1
               Buffers: shared hit=6
@@ -13,6 +13,6 @@ Limit  (cost=0.71..133.01 rows=50 width=42) (actual time=0.009..0.129 rows=50.00
               Buffers: shared hit=223
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
 Planning:
-  Buffers: shared hit=14
-Planning Time: 0.113 ms
-Execution Time: 0.139 ms
+  Buffers: shared hit=15
+Planning Time: 0.100 ms
+Execution Time: 0.095 ms

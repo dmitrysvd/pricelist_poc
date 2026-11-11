@@ -1,13 +1,13 @@
-Delete on x_row r  (cost=0.70..143.48 rows=0 width=0) (actual time=132.803..132.804 rows=0.00 loops=1)
+Delete on x_row r  (cost=0.70..143.48 rows=0 width=0) (actual time=138.480..138.481 rows=0.00 loops=1)
   Buffers: shared hit=512365
   WAL: records=85000 bytes=4590000
-  ->  Nested Loop  (cost=0.70..143.48 rows=53 width=38) (actual time=0.525..96.733 rows=85000.00 loops=1)
+  ->  Nested Loop  (cost=0.70..143.48 rows=53 width=38) (actual time=0.459..100.569 rows=85000.00 loops=1)
         Buffers: shared hit=340049
-        ->  Subquery Scan on d  (cost=0.28..3.30 rows=53 width=40) (actual time=0.518..14.870 rows=85000.00 loops=1)
+        ->  Subquery Scan on d  (cost=0.28..3.30 rows=53 width=40) (actual time=0.451..15.055 rows=85000.00 loops=1)
               Buffers: shared hit=49
-              ->  ProjectSet  (cost=0.28..2.77 rows=53 width=8) (actual time=0.515..5.098 rows=85000.00 loops=1)
+              ->  ProjectSet  (cost=0.28..2.77 rows=53 width=8) (actual time=0.448..5.155 rows=85000.00 loops=1)
                     Buffers: shared hit=49
-                    ->  Index Scan using x_version_pkey on x_version  (cost=0.28..2.50 rows=1 width=436) (actual time=0.006..0.007 rows=1.00 loops=1)
+                    ->  Index Scan using x_version_pkey on x_version  (cost=0.28..2.50 rows=1 width=436) (actual time=0.006..0.006 rows=1.00 loops=1)
                           Index Cond: (id = '735'::smallint)
                           Filter: ((status)::text = 'S'::text)
                           Index Searches: 1
@@ -19,5 +19,5 @@ Delete on x_row r  (cost=0.70..143.48 rows=0 width=0) (actual time=132.803..132.
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
 Planning:
   Buffers: shared hit=12
-Planning Time: 0.132 ms
-Execution Time: 133.451 ms
+Planning Time: 0.129 ms
+Execution Time: 139.081 ms

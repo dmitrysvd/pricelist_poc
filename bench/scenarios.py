@@ -250,7 +250,9 @@ def run_writes(base_db, dataset, models, ctx, only, connect, write_runs=None):
                         op = setup(m)
                         run_steps(cur, op)
                         # id созданной запланированной версии — из шага "ver"
-                        cur.execute(f"SELECT max(id) FROM {'x_version' if m.name.startswith('X') else 'y_version'} "
+                        vt = {"X": "x_version", "X(б)": "x_version", "X·lat": "x_version",
+                              "Y": "y_version", "Y2": "y2_version", "Y3": "y3_version"}[m.name]
+                        cur.execute(f"SELECT max(id) FROM {vt} "
                                     "WHERE status = 'S'")
                         setup_res = cur.fetchone()[0]
                     conn.commit()

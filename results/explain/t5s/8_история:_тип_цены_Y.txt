@@ -1,4 +1,4 @@
-Limit  (cost=0.70..41.65 rows=50 width=42) (actual time=0.009..0.064 rows=50.00 loops=1)
+Limit  (cost=0.70..41.65 rows=50 width=42) (actual time=0.008..0.063 rows=50.00 loops=1)
   Buffers: shared hit=167
   ->  Nested Loop Semi Join  (cost=0.70..388.04 rows=473 width=42) (actual time=0.008..0.061 rows=50.00 loops=1)
         Buffers: shared hit=167
@@ -14,5 +14,5 @@ Limit  (cost=0.70..41.65 rows=50 width=42) (actual time=0.009..0.064 rows=50.00 
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
 Planning:
   Buffers: shared hit=14
-Planning Time: 0.108 ms
-Execution Time: 0.073 ms
+Planning Time: 0.099 ms
+Execution Time: 0.072 ms

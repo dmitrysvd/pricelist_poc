@@ -1,21 +1,21 @@
-Nested Loop Left Join  (cost=6.68..21.66 rows=1 width=72) (actual time=0.394..0.396 rows=1.00 loops=1)
+Nested Loop Left Join  (cost=6.68..21.66 rows=1 width=72) (actual time=0.478..0.480 rows=1.00 loops=1)
   Buffers: shared hit=78
   CTE v
     ->  Index Scan using x_version_pkey on x_version  (cost=0.28..2.49 rows=1 width=8) (actual time=0.002..0.002 rows=1.00 loops=1)
           Index Cond: (id = '364'::smallint)
           Index Searches: 1
           Buffers: shared hit=3
-  ->  Limit  (cost=1.27..8.71 rows=1 width=48) (actual time=0.034..0.034 rows=1.00 loops=1)
+  ->  Limit  (cost=1.27..8.71 rows=1 width=48) (actual time=0.037..0.038 rows=1.00 loops=1)
         Buffers: shared hit=47
-        ->  Nested Loop  (cost=1.27..23.57 rows=3 width=48) (actual time=0.033..0.034 rows=1.00 loops=1)
+        ->  Nested Loop  (cost=1.27..23.57 rows=3 width=48) (actual time=0.036..0.037 rows=1.00 loops=1)
               Join Filter: (((r.price_overrides ->> '9'::text))::numeric IS DISTINCT FROM ((r_1.price_overrides ->> '9'::text))::numeric)
               Rows Removed by Join Filter: 7
               Buffers: shared hit=47
-              ->  Nested Loop  (cost=0.42..10.58 rows=3 width=272) (actual time=0.010..0.015 rows=8.00 loops=1)
+              ->  Nested Loop  (cost=0.42..10.58 rows=3 width=272) (actual time=0.011..0.016 rows=8.00 loops=1)
                     Join Filter: (r.valid_from > v.t)
                     Rows Removed by Join Filter: 5
                     Buffers: shared hit=19
-                    ->  Index Scan using x_row_service_vf_idx on x_row r  (cost=0.42..10.39 rows=8 width=272) (actual time=0.004..0.008 rows=13.00 loops=1)
+                    ->  Index Scan using x_row_service_vf_idx on x_row r  (cost=0.42..10.39 rows=8 width=272) (actual time=0.005..0.009 rows=13.00 loops=1)
                           Index Cond: (service_id = 67221)
                           Filter: ((child_id IS NOT NULL) OR (valid_from <= now()))
                           Index Searches: 1
@@ -26,11 +26,11 @@ Nested Loop Left Join  (cost=6.68..21.66 rows=1 width=72) (actual time=0.394..0.
               ->  Materialize  (cost=0.85..12.87 rows=1 width=256) (actual time=0.002..0.002 rows=1.00 loops=8)
                     Storage: Memory  Maximum Storage: 17kB
                     Buffers: shared hit=28
-                    ->  Nested Loop Left Join  (cost=0.85..12.87 rows=1 width=256) (actual time=0.011..0.012 rows=1.00 loops=1)
+                    ->  Nested Loop Left Join  (cost=0.85..12.87 rows=1 width=256) (actual time=0.013..0.014 rows=1.00 loops=1)
                           Filter: ((c.id IS NULL) OR (c.valid_from > v_1.t))
                           Rows Removed by Filter: 4
                           Buffers: shared hit=28
-                          ->  Nested Loop  (cost=0.42..4.90 rows=3 width=272) (actual time=0.002..0.004 rows=5.00 loops=1)
+                          ->  Nested Loop  (cost=0.42..4.90 rows=3 width=272) (actual time=0.003..0.005 rows=5.00 loops=1)
                                 Buffers: shared hit=8
                                 ->  CTE Scan on v v_1  (cost=0.00..0.02 rows=1 width=8) (actual time=0.000..0.000 rows=1.00 loops=1)
                                       Storage: Memory  Maximum Storage: 17kB
@@ -42,14 +42,14 @@ Nested Loop Left Join  (cost=6.68..21.66 rows=1 width=72) (actual time=0.394..0.
                                 Index Cond: (id = r_1.child_id)
                                 Index Searches: 5
                                 Buffers: shared hit=20
-  ->  Limit  (cost=2.91..10.46 rows=1 width=24) (actual time=0.360..0.360 rows=1.00 loops=1)
+  ->  Limit  (cost=2.91..10.46 rows=1 width=24) (actual time=0.441..0.442 rows=1.00 loops=1)
         Buffers: shared hit=31
         InitPlan 2
           ->  Index Scan using service_pkey on service  (cost=0.42..2.64 rows=1 width=8) (actual time=0.002..0.002 rows=1.00 loops=1)
                 Index Cond: (id = 67221)
                 Index Searches: 1
                 Buffers: shared hit=4
-        ->  Index Scan Backward using x_version_branch_created_idx on x_version xv  (cost=0.28..45.54 rows=6 width=24) (actual time=0.358..0.358 rows=1.00 loops=1)
+        ->  Index Scan Backward using x_version_branch_created_idx on x_version xv  (cost=0.28..45.54 rows=6 width=24) (actual time=0.438..0.438 rows=1.00 loops=1)
               Index Cond: ((branch_id = (InitPlan 2).col1) AND (created_at <= r.valid_from))
               Filter: (r.id = ANY (row_ids))
               Rows Removed by Filter: 7
@@ -58,5 +58,5 @@ Nested Loop Left Join  (cost=6.68..21.66 rows=1 width=72) (actual time=0.394..0.
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
 Planning:
   Buffers: shared hit=15
-Planning Time: 0.310 ms
-Execution Time: 0.416 ms
+Planning Time: 0.354 ms
+Execution Time: 0.504 ms

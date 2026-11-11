@@ -1,0 +1,57 @@
+Result  (cost=10.15..10.16 rows=1 width=16) (actual time=0.040..0.042 rows=1.00 loops=1)
+  Buffers: shared hit=19
+  WAL: records=4 bytes=327
+  CTE src
+    ->  Result  (cost=2.49..2.50 rows=1 width=48) (actual time=0.005..0.005 rows=1.00 loops=1)
+          One-Time Filter: (NOT (InitPlan 1).col1)
+          Buffers: shared hit=2
+          InitPlan 1
+            ->  Index Only Scan using y2_value_scheduled_uq on y2_value q  (cost=0.27..2.49 rows=1 width=0) (actual time=0.004..0.004 rows=0.00 loops=1)
+                  Index Cond: ((service_id = 41623) AND (price_type_id = '1'::smallint))
+                  Heap Fetches: 0
+                  Index Searches: 1
+                  Buffers: shared hit=2
+  CTE inplace
+    ->  Update on y2_value v  (cost=0.43..2.69 rows=1 width=94) (actual time=0.005..0.005 rows=0.00 loops=1)
+          Buffers: shared hit=4
+          ->  Nested Loop  (cost=0.43..2.69 rows=1 width=94) (actual time=0.005..0.005 rows=0.00 loops=1)
+                Buffers: shared hit=4
+                ->  CTE Scan on src  (cost=0.00..0.02 rows=1 width=120) (actual time=0.002..0.002 rows=1.00 loops=1)
+                      Storage: Memory  Maximum Storage: 17kB
+                ->  Index Scan using y2_value_latest_uq on y2_value v  (cost=0.43..2.65 rows=1 width=22) (actual time=0.003..0.003 rows=0.00 loops=1)
+                      Index Cond: ((service_id = src.service_id) AND (price_type_id = src.price_type_id) AND (ver = '737'::smallint))
+                      Index Searches: 1
+                      Buffers: shared hit=4
+  CTE ins
+    ->  Insert on y2_value  (cost=0.43..4.90 rows=1 width=56) (actual time=0.032..0.033 rows=1.00 loops=1)
+          Buffers: shared hit=15
+          WAL: records=4 bytes=327
+          ->  Nested Loop Anti Join  (cost=0.43..4.90 rows=1 width=56) (actual time=0.013..0.013 rows=1.00 loops=1)
+                Buffers: shared hit=6
+                ->  CTE Scan on src src_1  (cost=0.00..0.02 rows=1 width=48) (actual time=0.005..0.005 rows=1.00 loops=1)
+                      Storage: Memory  Maximum Storage: 17kB
+                      Buffers: shared hit=2
+                ->  Index Only Scan using y2_value_latest_uq on y2_value v_1  (cost=0.43..2.65 rows=1 width=16) (actual time=0.005..0.005 rows=0.00 loops=1)
+                      Index Cond: ((service_id = src_1.service_id) AND (price_type_id = src_1.price_type_id) AND (ver = '737'::smallint))
+                      Heap Fetches: 0
+                      Index Searches: 1
+                      Buffers: shared hit=3
+  InitPlan 5
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=0.034..0.034 rows=1.00 loops=1)
+          Buffers: shared hit=15
+          WAL: records=4 bytes=327
+          ->  CTE Scan on ins  (cost=0.00..0.02 rows=1 width=0) (actual time=0.032..0.033 rows=1.00 loops=1)
+                Storage: Memory  Maximum Storage: 17kB
+                Buffers: shared hit=15
+                WAL: records=4 bytes=327
+  InitPlan 6
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=0.005..0.006 rows=1.00 loops=1)
+          Buffers: shared hit=4
+          ->  CTE Scan on inplace  (cost=0.00..0.02 rows=1 width=0) (actual time=0.005..0.005 rows=0.00 loops=1)
+                Storage: Memory  Maximum Storage: 17kB
+                Buffers: shared hit=4
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=8
+Planning Time: 0.176 ms
+Execution Time: 0.071 ms

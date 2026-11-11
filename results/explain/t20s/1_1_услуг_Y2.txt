@@ -1,0 +1,25 @@
+Nested Loop Left Join  (cost=1.28..5.78 rows=1 width=110) (actual time=0.019..0.020 rows=1.00 loops=1)
+  Buffers: shared hit=11
+  ->  Nested Loop  (cost=0.85..4.21 rows=1 width=103) (actual time=0.013..0.013 rows=1.00 loops=1)
+        Buffers: shared hit=8
+        ->  Index Scan using service_pkey on service s  (cost=0.42..2.64 rows=1 width=96) (actual time=0.009..0.009 rows=1.00 loops=1)
+              Index Cond: (id = ANY ('{64293}'::integer[]))
+              Index Searches: 1
+              Buffers: shared hit=4
+        ->  Limit  (cost=0.43..1.55 rows=1 width=31) (actual time=0.003..0.003 rows=1.00 loops=1)
+              Buffers: shared hit=4
+              ->  Index Only Scan Backward using y2_value_latest_uq on y2_value v  (cost=0.43..1.55 rows=1 width=31) (actual time=0.003..0.003 rows=1.00 loops=1)
+                    Index Cond: ((service_id = s.id) AND (price_type_id = '1'::smallint))
+                    Heap Fetches: 0
+                    Index Searches: 1
+                    Buffers: shared hit=4
+  ->  Limit  (cost=0.43..1.55 rows=1 width=31) (actual time=0.006..0.006 rows=0.00 loops=1)
+        Buffers: shared hit=3
+        ->  Index Only Scan Backward using y2_value_latest_uq on y2_value v_1  (cost=0.43..1.55 rows=1 width=31) (actual time=0.005..0.005 rows=0.00 loops=1)
+              Index Cond: ((service_id = s.id) AND (price_type_id = '2'::smallint))
+              Heap Fetches: 0
+              Index Searches: 1
+              Buffers: shared hit=3
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning Time: 0.077 ms
+Execution Time: 0.031 ms

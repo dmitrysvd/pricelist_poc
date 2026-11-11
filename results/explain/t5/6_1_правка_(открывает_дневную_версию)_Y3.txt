@@ -1,0 +1,75 @@
+Result  (cost=10.21..10.22 rows=1 width=24) (actual time=0.085..0.100 rows=1.00 loops=1)
+  Buffers: shared hit=28
+  WAL: records=6 bytes=458
+  CTE src
+    ->  Result  (cost=2.49..2.50 rows=1 width=48) (actual time=0.006..0.019 rows=1.00 loops=1)
+          One-Time Filter: (NOT (InitPlan 1).col1)
+          Buffers: shared hit=2
+          InitPlan 1
+            ->  Index Only Scan using y3_value_scheduled_uq on y3_value q  (cost=0.28..2.49 rows=1 width=0) (actual time=0.005..0.005 rows=0.00 loops=1)
+                  Index Cond: ((service_id = 41623) AND (price_type_id = '1'::smallint))
+                  Heap Fetches: 0
+                  Index Searches: 1
+                  Buffers: shared hit=2
+  CTE inplace
+    ->  Update on y3_value v  (cost=0.43..2.69 rows=1 width=94) (actual time=0.007..0.007 rows=0.00 loops=1)
+          Buffers: shared hit=4
+          ->  Nested Loop  (cost=0.43..2.69 rows=1 width=94) (actual time=0.006..0.007 rows=0.00 loops=1)
+                Buffers: shared hit=4
+                ->  CTE Scan on src  (cost=0.00..0.02 rows=1 width=120) (actual time=0.002..0.002 rows=1.00 loops=1)
+                      Storage: Memory  Maximum Storage: 17kB
+                ->  Index Scan using y3_value_latest_uq on y3_value v  (cost=0.43..2.65 rows=1 width=22) (actual time=0.003..0.003 rows=0.00 loops=1)
+                      Index Cond: ((service_id = src.service_id) AND (price_type_id = src.price_type_id) AND (ver = '737'::smallint))
+                      Index Searches: 1
+                      Buffers: shared hit=4
+  CTE ins
+    ->  Insert on y3_value  (cost=0.43..4.90 rows=1 width=56) (actual time=0.040..0.041 rows=1.00 loops=1)
+          Buffers: shared hit=15
+          WAL: records=4 bytes=327
+          ->  Nested Loop Anti Join  (cost=0.43..4.90 rows=1 width=56) (actual time=0.015..0.016 rows=1.00 loops=1)
+                Buffers: shared hit=6
+                ->  CTE Scan on src src_1  (cost=0.00..0.02 rows=1 width=48) (actual time=0.007..0.007 rows=1.00 loops=1)
+                      Storage: Memory  Maximum Storage: 17kB
+                      Buffers: shared hit=2
+                ->  Index Only Scan using y3_value_latest_uq on y3_value v_1  (cost=0.43..2.65 rows=1 width=16) (actual time=0.005..0.005 rows=0.00 loops=1)
+                      Index Cond: ((service_id = src_1.service_id) AND (price_type_id = src_1.price_type_id) AND (ver = '737'::smallint))
+                      Heap Fetches: 0
+                      Index Searches: 1
+                      Buffers: shared hit=3
+  CTE head
+    ->  Insert on y3_current  (cost=0.00..0.02 rows=1 width=40) (actual time=0.031..0.032 rows=1.00 loops=1)
+          Conflict Resolution: UPDATE
+          Conflict Arbiter Indexes: y3_current_pkey
+          Tuples Inserted: 0
+          Conflicting Tuples: 1
+          Buffers: shared hit=9
+          WAL: records=2 bytes=131
+          ->  CTE Scan on src src_2  (cost=0.00..0.02 rows=1 width=40) (actual time=0.001..0.001 rows=1.00 loops=1)
+                Storage: Memory  Maximum Storage: 17kB
+  InitPlan 6
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=0.043..0.043 rows=1.00 loops=1)
+          Buffers: shared hit=15
+          WAL: records=4 bytes=327
+          ->  CTE Scan on ins  (cost=0.00..0.02 rows=1 width=0) (actual time=0.040..0.041 rows=1.00 loops=1)
+                Storage: Memory  Maximum Storage: 17kB
+                Buffers: shared hit=15
+                WAL: records=4 bytes=327
+  InitPlan 7
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=0.007..0.007 rows=1.00 loops=1)
+          Buffers: shared hit=4
+          ->  CTE Scan on inplace  (cost=0.00..0.02 rows=1 width=0) (actual time=0.007..0.007 rows=0.00 loops=1)
+                Storage: Memory  Maximum Storage: 17kB
+                Buffers: shared hit=4
+  InitPlan 8
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=0.033..0.033 rows=1.00 loops=1)
+          Buffers: shared hit=9
+          WAL: records=2 bytes=131
+          ->  CTE Scan on head  (cost=0.00..0.02 rows=1 width=0) (actual time=0.032..0.032 rows=1.00 loops=1)
+                Storage: Memory  Maximum Storage: 17kB
+                Buffers: shared hit=9
+                WAL: records=2 bytes=131
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=15
+Planning Time: 0.292 ms
+Execution Time: 0.148 ms

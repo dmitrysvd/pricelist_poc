@@ -1,9 +1,9 @@
-Limit  (cost=0.28..2.03 rows=50 width=42) (actual time=0.006..0.013 rows=50.00 loops=1)
+Limit  (cost=0.28..2.03 rows=50 width=42) (actual time=0.011..0.024 rows=50.00 loops=1)
   Buffers: shared hit=3
-  ->  Index Scan Backward using y_version_branch_created_idx on y_version v  (cost=0.28..25.97 rows=733 width=42) (actual time=0.005..0.010 rows=50.00 loops=1)
+  ->  Index Scan Backward using y_version_branch_created_idx on y_version v  (cost=0.28..25.97 rows=733 width=42) (actual time=0.011..0.020 rows=50.00 loops=1)
         Index Cond: (branch_id = '1'::smallint)
         Index Searches: 1
         Buffers: shared hit=3
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
-Planning Time: 0.025 ms
-Execution Time: 0.018 ms
+Planning Time: 0.045 ms
+Execution Time: 0.033 ms

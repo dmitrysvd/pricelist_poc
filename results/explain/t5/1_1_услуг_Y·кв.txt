@@ -1,0 +1,19 @@
+Merge Join  (cost=0.84..6.96 rows=1 width=160) (actual time=0.015..0.016 rows=1.00 loops=1)
+  Merge Cond: (s.id = v.service_id)
+  Buffers: shared hit=8
+  ->  Index Scan using service_pkey on service s  (cost=0.42..2.64 rows=1 width=96) (actual time=0.005..0.005 rows=1.00 loops=1)
+        Index Cond: (id = ANY ('{64293}'::integer[]))
+        Index Searches: 1
+        Buffers: shared hit=4
+  ->  GroupAggregate  (cost=0.42..4.27 rows=3 width=72) (actual time=0.009..0.009 rows=1.00 loops=1)
+        Group Key: v.service_id
+        Filter: (max(v.value) FILTER (WHERE (v.price_type_id = '1'::smallint)) IS NOT NULL)
+        Buffers: shared hit=4
+        ->  Index Only Scan using y_value_actual_uq on y_value v  (cost=0.42..4.20 rows=3 width=24) (actual time=0.007..0.007 rows=1.00 loops=1)
+              Index Cond: ((service_id = ANY ('{64293}'::integer[])) AND (price_type_id = ANY ('{1,2}'::smallint[])))
+              Heap Fetches: 0
+              Index Searches: 1
+              Buffers: shared hit=4
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning Time: 0.099 ms
+Execution Time: 0.028 ms

@@ -1,0 +1,44 @@
+Insert on y2_value  (cost=1.13..140283.71 rows=0 width=0) (actual time=482.389..482.390 rows=0.00 loops=1)
+  Buffers: shared hit=867816 dirtied=1047 written=1047
+  I/O Timings: shared write=6.740
+  WAL: records=344018 bytes=26966155
+  ->  Nested Loop Anti Join  (cost=1.13..140283.71 rows=85186 width=56) (actual time=5.823..272.290 rows=85000.00 loops=1)
+        Join Filter: (q.service_id = s.id)
+        Buffers: shared hit=343108
+        WAL: records=2576 bytes=255024
+        ->  Nested Loop  (cost=0.73..137937.40 rows=85187 width=24) (actual time=0.028..216.652 rows=85000.00 loops=1)
+              Buffers: shared hit=256738
+              ->  Nested Loop  (cost=0.29..3980.84 rows=85187 width=16) (actual time=0.013..24.302 rows=85000.00 loops=1)
+                    Buffers: shared hit=1615
+                    ->  Seq Scan on price_type pt  (cost=0.00..1.90 rows=1 width=16) (actual time=0.004..0.008 rows=1.00 loops=1)
+                          Filter: ((branch_id = '1'::smallint) AND (id = '1'::smallint))
+                          Rows Removed by Filter: 59
+                          Buffers: shared hit=1
+                    ->  Index Scan using service_branch_id_949e182d on service s  (cost=0.29..3127.07 rows=85187 width=16) (actual time=0.008..18.296 rows=85000.00 loops=1)
+                          Index Cond: (branch_id = '1'::smallint)
+                          Filter: (NOT archived)
+                          Index Searches: 1
+                          Buffers: shared hit=1614
+              ->  Subquery Scan on lv  (cost=0.43..1.56 rows=1 width=8) (actual time=0.002..0.002 rows=1.00 loops=85000)
+                    Filter: (lv.value IS NOT NULL)
+                    Buffers: shared hit=255123
+                    ->  Limit  (cost=0.43..1.55 rows=1 width=32) (actual time=0.002..0.002 rows=1.00 loops=85000)
+                          Buffers: shared hit=255123
+                          ->  Index Only Scan Backward using y2_value_latest_uq on y2_value v  (cost=0.43..2.67 rows=2 width=32) (actual time=0.002..0.002 rows=1.00 loops=85000)
+                                Index Cond: ((service_id = s.id) AND (price_type_id = pt.id))
+                                Heap Fetches: 0
+                                Index Searches: 85000
+                                Buffers: shared hit=255123
+        ->  Materialize  (cost=0.40..3.69 rows=1 width=16) (actual time=0.000..0.000 rows=0.00 loops=85000)
+              Storage: Memory  Maximum Storage: 17kB
+              Buffers: shared hit=1370
+              ->  Index Only Scan using y2_value_scheduled_uq on y2_value q  (cost=0.40..3.68 rows=1 width=16) (actual time=5.787..5.787 rows=0.00 loops=1)
+                    Index Cond: (price_type_id = '1'::smallint)
+                    Heap Fetches: 85000
+                    Index Searches: 1
+                    Buffers: shared hit=1370
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=16
+Planning Time: 0.332 ms
+Execution Time: 484.131 ms

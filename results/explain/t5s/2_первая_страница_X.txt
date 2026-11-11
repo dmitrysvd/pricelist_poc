@@ -1,10 +1,10 @@
-Limit  (cost=1.27..170.12 rows=50 width=242) (actual time=0.013..0.123 rows=50.00 loops=1)
+Limit  (cost=1.27..170.12 rows=50 width=242) (actual time=0.012..0.143 rows=50.00 loops=1)
   Buffers: shared hit=355
-  ->  Nested Loop Left Join  (cost=1.27..286430.63 rows=84813 width=242) (actual time=0.013..0.120 rows=50.00 loops=1)
+  ->  Nested Loop Left Join  (cost=1.27..286430.63 rows=84813 width=242) (actual time=0.012..0.139 rows=50.00 loops=1)
         Buffers: shared hit=355
-        ->  Nested Loop  (cost=0.84..61464.15 rows=84813 width=167) (actual time=0.010..0.069 rows=50.00 loops=1)
+        ->  Nested Loop  (cost=0.84..61464.15 rows=84813 width=167) (actual time=0.009..0.079 rows=50.00 loops=1)
               Buffers: shared hit=204
-              ->  Index Only Scan using service_page_idx on service s  (cost=0.42..3145.58 rows=85419 width=100) (actual time=0.007..0.010 rows=50.00 loops=1)
+              ->  Index Only Scan using service_page_idx on service s  (cost=0.42..3145.58 rows=85419 width=100) (actual time=0.005..0.009 rows=50.00 loops=1)
                     Index Cond: (branch_id = '1'::smallint)
                     Heap Fetches: 0
                     Index Searches: 1
@@ -22,5 +22,5 @@ Limit  (cost=1.27..170.12 rows=50 width=242) (actual time=0.013..0.123 rows=50.0
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
 Planning:
   Buffers: shared hit=18
-Planning Time: 0.187 ms
-Execution Time: 0.138 ms
+Planning Time: 0.208 ms
+Execution Time: 0.164 ms

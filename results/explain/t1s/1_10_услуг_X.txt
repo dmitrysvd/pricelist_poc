@@ -1,6 +1,6 @@
-Nested Loop  (cost=0.84..33.40 rows=10 width=136) (actual time=0.007..0.031 rows=10.00 loops=1)
+Nested Loop  (cost=0.84..33.40 rows=10 width=136) (actual time=0.008..0.037 rows=10.00 loops=1)
   Buffers: shared hit=71
-  ->  Index Scan using service_pkey on service s  (cost=0.42..16.48 rows=10 width=96) (actual time=0.004..0.016 rows=10.00 loops=1)
+  ->  Index Scan using service_pkey on service s  (cost=0.42..16.48 rows=10 width=96) (actual time=0.004..0.019 rows=10.00 loops=1)
         Index Cond: (id = ANY ('{22928,59352,6181,82304,7913,17403,6330,48596,63066,34117}'::integer[]))
         Index Searches: 10
         Buffers: shared hit=40
@@ -12,5 +12,5 @@ Nested Loop  (cost=0.84..33.40 rows=10 width=136) (actual time=0.007..0.031 rows
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
 Planning:
   Buffers: shared hit=17
-Planning Time: 0.092 ms
-Execution Time: 0.039 ms
+Planning Time: 0.111 ms
+Execution Time: 0.045 ms

@@ -1,31 +1,31 @@
-Insert on y_value  (cost=4167.83..10159.98 rows=0 width=0) (actual time=558.794..558.796 rows=0.00 loops=1)
+Insert on y_value  (cost=4167.83..10159.98 rows=0 width=0) (actual time=448.135..448.137 rows=0.00 loops=1)
   Buffers: shared hit=946486
-  WAL: records=511921 bytes=39365630 buffers full=2497
-  ->  Hash Join  (cost=4167.83..10159.98 rows=67594 width=72) (actual time=15.537..89.149 rows=84500.00 loops=1)
+  WAL: records=511921 bytes=39365630 buffers full=1429
+  ->  Hash Join  (cost=4167.83..10159.98 rows=67594 width=72) (actual time=15.357..84.916 rows=84500.00 loops=1)
         Hash Cond: (v.service_id = s.id)
         Buffers: shared hit=87789
-        WAL: records=2560 bytes=253440 buffers full=12
-        ->  Merge Anti Join  (cost=0.82..4791.88 rows=135676 width=24) (actual time=0.020..19.142 rows=84500.00 loops=1)
+        WAL: records=2560 bytes=253440 buffers full=10
+        ->  Merge Anti Join  (cost=0.82..4791.88 rows=135676 width=24) (actual time=0.020..18.479 rows=84500.00 loops=1)
               Merge Cond: (v.service_id = q.service_id)
               Buffers: shared hit=1675
-              ->  Index Only Scan using y_value_actual_uq on y_value v  (cost=0.42..3696.13 rows=136439 width=24) (actual time=0.014..11.178 rows=85000.00 loops=1)
+              ->  Index Only Scan using y_value_actual_uq on y_value v  (cost=0.42..3696.13 rows=136439 width=24) (actual time=0.014..10.882 rows=85000.00 loops=1)
                     Index Cond: (price_type_id = '1'::smallint)
                     Filter: (value IS NOT NULL)
                     Heap Fetches: 0
                     Index Searches: 1
                     Buffers: shared hit=1328
-              ->  Materialize  (cost=0.40..744.55 rows=536 width=16) (actual time=0.004..0.463 rows=500.00 loops=1)
+              ->  Materialize  (cost=0.40..744.55 rows=536 width=16) (actual time=0.004..0.431 rows=500.00 loops=1)
                     Storage: Memory  Maximum Storage: 17kB
                     Buffers: shared hit=347
-                    ->  Index Only Scan using y_value_scheduled_uq on y_value q  (cost=0.40..743.21 rows=536 width=16) (actual time=0.003..0.355 rows=500.00 loops=1)
+                    ->  Index Only Scan using y_value_scheduled_uq on y_value q  (cost=0.40..743.21 rows=536 width=16) (actual time=0.003..0.334 rows=500.00 loops=1)
                           Index Cond: (price_type_id = '1'::smallint)
                           Heap Fetches: 32
                           Index Searches: 1
                           Buffers: shared hit=347
-        ->  Hash  (cost=3108.34..3108.34 rows=84694 width=8) (actual time=15.458..15.458 rows=85000.00 loops=1)
+        ->  Hash  (cost=3108.34..3108.34 rows=84694 width=8) (actual time=15.275..15.275 rows=85000.00 loops=1)
               Buckets: 131072  Batches: 1  Memory Usage: 4345kB
               Buffers: shared hit=1614
-              ->  Index Scan using service_branch_id_949e182d on service s  (cost=0.29..3108.34 rows=84694 width=8) (actual time=0.008..8.541 rows=85000.00 loops=1)
+              ->  Index Scan using service_branch_id_949e182d on service s  (cost=0.29..3108.34 rows=84694 width=8) (actual time=0.008..8.766 rows=85000.00 loops=1)
                     Index Cond: (branch_id = '1'::smallint)
                     Filter: (NOT archived)
                     Index Searches: 1
@@ -33,5 +33,5 @@ Insert on y_value  (cost=4167.83..10159.98 rows=0 width=0) (actual time=558.794.
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
 Planning:
   Buffers: shared hit=47
-Planning Time: 0.354 ms
-Execution Time: 561.152 ms
+Planning Time: 0.348 ms
+Execution Time: 450.479 ms

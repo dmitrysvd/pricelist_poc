@@ -1,18 +1,18 @@
-Limit  (cost=36.21..36.32 rows=44 width=34) (actual time=0.041..0.046 rows=44.00 loops=1)
+Limit  (cost=36.21..36.32 rows=44 width=34) (actual time=0.024..0.028 rows=44.00 loops=1)
   Buffers: shared hit=34
-  ->  Sort  (cost=36.21..36.32 rows=44 width=34) (actual time=0.040..0.042 rows=44.00 loops=1)
+  ->  Sort  (cost=36.21..36.32 rows=44 width=34) (actual time=0.024..0.026 rows=44.00 loops=1)
         Sort Key: created_at DESC
         Sort Method: quicksort  Memory: 28kB
         Buffers: shared hit=34
-        ->  Bitmap Heap Scan on x_version v  (cost=1.59..35.01 rows=44 width=34) (actual time=0.010..0.024 rows=44.00 loops=1)
+        ->  Bitmap Heap Scan on x_version v  (cost=1.59..35.01 rows=44 width=34) (actual time=0.007..0.018 rows=44.00 loops=1)
               Recheck Cond: (author_id = '1'::smallint)
               Filter: (branch_id = '1'::smallint)
               Heap Blocks: exact=33
               Buffers: shared hit=34
-              ->  Bitmap Index Scan on x_version_author_id_7bef4762  (cost=0.00..1.58 rows=44 width=0) (actual time=0.004..0.004 rows=44.00 loops=1)
+              ->  Bitmap Index Scan on x_version_author_id_7bef4762  (cost=0.00..1.58 rows=44 width=0) (actual time=0.003..0.003 rows=44.00 loops=1)
                     Index Cond: (author_id = '1'::smallint)
                     Index Searches: 1
                     Buffers: shared hit=1
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
-Planning Time: 0.042 ms
-Execution Time: 0.055 ms
+Planning Time: 0.035 ms
+Execution Time: 0.035 ms

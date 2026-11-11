@@ -1,0 +1,121 @@
+Result  (cost=535770.02..535770.03 rows=1 width=16) (actual time=3864.092..3864.103 rows=1.00 loops=1)
+  Buffers: shared hit=2609661 dirtied=2562 written=2562, temp read=25230 written=25232
+  I/O Timings: shared write=14.807, temp read=26.167 write=86.529
+  WAL: records=1110281 fpi=1 bytes=91432517 buffers full=2045
+  CTE h
+    ->  Hash Join  (cost=4175.30..65370.39 rows=1378851 width=31) (actual time=15.270..466.593 rows=1708427.00 loops=1)
+          Hash Cond: (v.service_id = s.id)
+          Buffers: shared hit=27935
+          ->  Seq Scan on y2_value v  (cost=0.00..53944.86 rows=2761926 width=31) (actual time=0.003..146.918 rows=2762321.00 loops=1)
+                Filter: (ver IS NOT NULL)
+                Buffers: shared hit=26321
+          ->  Hash  (cost=3114.42..3114.42 rows=84870 width=8) (actual time=15.209..15.210 rows=85000.00 loops=1)
+                Buckets: 131072  Batches: 1  Memory Usage: 4345kB
+                Buffers: shared hit=1614
+                ->  Index Scan using service_branch_id_949e182d on service s  (cost=0.29..3114.42 rows=84870 width=8) (actual time=0.008..8.157 rows=85000.00 loops=1)
+                      Index Cond: (branch_id = '1'::smallint)
+                      Index Searches: 1
+                      Buffers: shared hit=1614
+  CTE src
+    ->  Hash Full Join  (cost=285620.22..298316.59 rows=593173 width=32) (actual time=2041.186..2612.705 rows=274212.00 loops=1)
+          Hash Cond: ((h.service_id = old.service_id) AND (h.price_type_id = old.price_type_id))
+          Filter: (h.value IS DISTINCT FROM old.value)
+          Rows Removed by Filter: 789433
+          Buffers: shared hit=27938, temp read=25230 written=25232
+          I/O Timings: temp read=26.167 write=86.529
+          ->  Unique  (cost=190270.24..200611.63 rows=154422 width=40) (actual time=495.308..750.591 rows=1063645.00 loops=1)
+                Buffers: temp read=17895 written=9271
+                I/O Timings: temp read=18.558 write=31.436
+                ->  Sort  (cost=190270.24..193717.37 rows=1378851 width=40) (actual time=495.306..627.268 rows=1708427.00 loops=1)
+                      Sort Key: h.service_id DESC, h.price_type_id DESC, h.ver DESC
+                      Sort Method: external merge  Disk: 74152kB
+                      Buffers: temp read=17895 written=9271
+                      I/O Timings: temp read=18.558 write=31.436
+                      ->  CTE Scan on h  (cost=0.00..27577.02 rows=1378851 width=40) (actual time=0.037..124.768 rows=1708427.00 loops=1)
+                            Storage: Disk  Maximum Storage: 69007kB
+                            Buffers: temp read=8626 written=1
+                            I/O Timings: temp read=9.242 write=0.029
+          ->  Hash  (cost=93033.64..93033.64 rows=154422 width=32) (actual time=1545.772..1545.774 rows=1058876.00 loops=1)
+                Buckets: 2097152 (originally 262144)  Batches: 1 (originally 1)  Memory Usage: 73484kB
+                Buffers: shared hit=27938, temp read=7335 written=15961
+                I/O Timings: temp read=7.608 write=55.093
+                ->  Subquery Scan on old  (cost=88042.30..93033.64 rows=154422 width=32) (actual time=1178.805..1436.447 rows=1058876.00 loops=1)
+                      Buffers: shared hit=27938, temp read=7335 written=15961
+                      I/O Timings: temp read=7.608 write=55.093
+                      ->  Unique  (cost=88042.30..91489.42 rows=154422 width=40) (actual time=1178.803..1364.387 rows=1058876.00 loops=1)
+                            Buffers: shared hit=27938, temp read=7335 written=15961
+                            I/O Timings: temp read=7.608 write=55.093
+                            ->  Sort  (cost=88042.30..89191.34 rows=459617 width=40) (actual time=1178.801..1268.520 rows=1379976.00 loops=1)
+                                  Sort Key: h_1.service_id DESC, h_1.price_type_id DESC, h_1.ver DESC
+                                  Sort Method: external merge  Disk: 58680kB
+                                  Buffers: shared hit=27938, temp read=7335 written=15961
+                                  I/O Timings: temp read=7.608 write=55.093
+                                  ->  Nested Loop  (cost=0.28..44815.15 rows=459617 width=40) (actual time=15.277..891.737 rows=1379976.00 loops=1)
+                                        Join Filter: (h_1.ver <= y2_version.number)
+                                        Rows Removed by Join Filter: 328451
+                                        Buffers: shared hit=27938, temp written=8625
+                                        I/O Timings: temp write=30.258
+                                        ->  Index Scan using y2_version_pkey on y2_version  (cost=0.28..2.49 rows=1 width=8) (actual time=0.004..0.006 rows=1.00 loops=1)
+                                              Index Cond: (id = '364'::smallint)
+                                              Index Searches: 1
+                                              Buffers: shared hit=3
+                                        ->  CTE Scan on h h_1  (cost=0.00..27577.02 rows=1378851 width=40) (actual time=15.271..758.794 rows=1708427.00 loops=1)
+                                              Storage: Disk  Maximum Storage: 69007kB
+                                              Buffers: shared hit=27935, temp written=8625
+                                              I/O Timings: temp write=30.258
+  CTE inplace
+    ->  Update on y2_value v_1  (cost=20761.49..88558.51 rows=3 width=78) (actual time=75.310..75.311 rows=0.00 loops=1)
+          Buffers: shared hit=27109
+          ->  Hash Join  (cost=20761.49..88558.51 rows=3 width=78) (actual time=75.308..75.309 rows=0.00 loops=1)
+                Hash Cond: ((v_1.service_id = src.service_id) AND (v_1.price_type_id = src.price_type_id))
+                Buffers: shared hit=27109
+                ->  Index Scan using y2_value_latest_uq on y2_value v_1  (cost=0.43..47925.56 rows=134 width=22) (actual time=75.308..75.308 rows=0.00 loops=1)
+                      Index Cond: (ver = '721'::smallint)
+                      Index Searches: 1
+                      Buffers: shared hit=27109
+                ->  Hash  (cost=11863.46..11863.46 rows=593173 width=88) (never executed)
+                      ->  CTE Scan on src  (cost=0.00..11863.46 rows=593173 width=88) (never executed)
+                            Storage: Memory  Maximum Storage: 16927kB
+  CTE ins
+    ->  Insert on y2_value  (cost=47782.62..70183.84 rows=592916 width=56) (actual time=2096.829..3731.889 rows=274212.00 loops=1)
+          Buffers: shared hit=2582552 dirtied=2562 written=2562, temp read=25230 written=25232
+          I/O Timings: shared write=14.807, temp read=26.167 write=86.529
+          WAL: records=1110281 fpi=1 bytes=91432517 buffers full=2045
+          ->  Hash Anti Join  (cost=47782.62..70183.84 rows=592916 width=56) (actual time=2096.782..2810.026 rows=274212.00 loops=1)
+                Hash Cond: ((src_1.service_id = v_2.service_id) AND (src_1.price_type_id = v_2.price_type_id))
+                Buffers: shared hit=326660, temp read=25230 written=25232
+                I/O Timings: temp read=26.167 write=86.529
+                WAL: records=8309 bytes=822591 buffers full=23
+                ->  CTE Scan on src src_1  (cost=0.00..11863.46 rows=593173 width=32) (actual time=2041.188..2660.614 rows=274212.00 loops=1)
+                      Storage: Memory  Maximum Storage: 16927kB
+                      Buffers: shared hit=27938, temp read=25230 written=25232
+                      I/O Timings: temp read=26.167 write=86.529
+                ->  Hash  (cost=47780.61..47780.61 rows=134 width=16) (actual time=55.581..55.582 rows=0.00 loops=1)
+                      Buckets: 1024  Batches: 1  Memory Usage: 8kB
+                      Buffers: shared hit=24510
+                      ->  Index Only Scan using y2_value_latest_uq on y2_value v_2  (cost=0.43..47780.61 rows=134 width=16) (actual time=55.580..55.580 rows=0.00 loops=1)
+                            Index Cond: (ver = '721'::smallint)
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=24510
+  InitPlan 5
+    ->  Aggregate  (cost=13340.61..13340.62 rows=1 width=8) (actual time=3788.774..3788.775 rows=1.00 loops=1)
+          Buffers: shared hit=2582552 dirtied=2562 written=2562, temp read=25230 written=25232
+          I/O Timings: shared write=14.807, temp read=26.167 write=86.529
+          WAL: records=1110281 fpi=1 bytes=91432517 buffers full=2045
+          ->  CTE Scan on ins  (cost=0.00..11858.32 rows=592916 width=0) (actual time=2096.830..3774.950 rows=274212.00 loops=1)
+                Storage: Memory  Maximum Storage: 12666kB
+                Buffers: shared hit=2582552 dirtied=2562 written=2562, temp read=25230 written=25232
+                I/O Timings: shared write=14.807, temp read=26.167 write=86.529
+                WAL: records=1110281 fpi=1 bytes=91432517 buffers full=2045
+  InitPlan 6
+    ->  Aggregate  (cost=0.07..0.08 rows=1 width=8) (actual time=75.313..75.313 rows=1.00 loops=1)
+          Buffers: shared hit=27109
+          ->  CTE Scan on inplace  (cost=0.00..0.06 rows=3 width=0) (actual time=75.311..75.311 rows=0.00 loops=1)
+                Storage: Memory  Maximum Storage: 17kB
+                Buffers: shared hit=27109
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=8
+Planning Time: 0.323 ms
+Execution Time: 3889.368 ms

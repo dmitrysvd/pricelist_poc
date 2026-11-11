@@ -8,7 +8,7 @@ USE_TZ = True
 TIME_ZONE = "Europe/Moscow"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-INSTALLED_APPS = ["django.contrib.postgres", "common", "model_x", "model_y"]
+INSTALLED_APPS = ["django.contrib.postgres", "common", "model_x", "model_y", "model_y2", "model_y3"]
 
 # Postgres работает в docker-контейнере pricelist-pg; сокет проброшен в .pgsock,
 # поэтому подключаемся без TCP (из сетевого namespace хост-порты недоступны).

@@ -1,8 +1,8 @@
-Limit  (cost=1.27..227.11 rows=50 width=242) (actual time=0.019..0.223 rows=50.00 loops=1)
+Limit  (cost=1.27..227.11 rows=50 width=242) (actual time=0.019..0.217 rows=50.00 loops=1)
   Buffers: shared hit=725
-  ->  Nested Loop Left Join  (cost=1.27..138338.18 rows=30626 width=242) (actual time=0.019..0.220 rows=50.00 loops=1)
+  ->  Nested Loop Left Join  (cost=1.27..138338.18 rows=30626 width=242) (actual time=0.018..0.214 rows=50.00 loops=1)
         Buffers: shared hit=725
-        ->  Nested Loop  (cost=0.84..57102.71 rows=30626 width=167) (actual time=0.017..0.175 rows=50.00 loops=1)
+        ->  Nested Loop  (cost=0.84..57102.71 rows=30626 width=167) (actual time=0.017..0.169 rows=50.00 loops=1)
               Buffers: shared hit=575
               ->  Index Only Scan using service_page_idx on service s  (cost=0.42..3045.09 rows=77390 width=100) (actual time=0.005..0.023 rows=142.00 loops=1)
                     Index Cond: ((branch_id = '1'::smallint) AND (ROW(category_sort, code, name, id) > ROW('95'::smallint, 'A0095.007999'::text, 'Услуга 007999 приём/исследование/процедура'::text, '8000'::smallint)))
@@ -24,5 +24,5 @@ Limit  (cost=1.27..227.11 rows=50 width=242) (actual time=0.019..0.223 rows=50.0
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
 Planning:
   Buffers: shared hit=18
-Planning Time: 0.196 ms
-Execution Time: 0.238 ms
+Planning Time: 0.183 ms
+Execution Time: 0.231 ms

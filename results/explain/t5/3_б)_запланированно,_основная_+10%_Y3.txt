@@ -1,0 +1,33 @@
+Insert on y3_value  (cost=4160.76..16855.48 rows=0 width=0) (actual time=320.196..320.198 rows=0.00 loops=1)
+  Buffers: shared hit=611374
+  WAL: records=344233 bytes=27233688 buffers full=441
+  ->  Hash Join  (cost=4160.76..16855.48 rows=42182 width=56) (actual time=16.952..98.142 rows=85000.00 loops=1)
+        Hash Cond: (c.service_id = s.id)
+        Buffers: shared hit=92362
+        WAL: records=2576 bytes=255024 buffers full=7
+        ->  Merge Anti Join  (cost=0.82..11945.66 rows=84804 width=23) (actual time=0.417..32.464 rows=85000.00 loops=1)
+              Merge Cond: (c.service_id = q.service_id)
+              Buffers: shared hit=5748
+              ->  Index Scan using y3_current_pkey on y3_current c  (cost=0.42..10981.45 rows=84899 width=23) (actual time=0.017..25.247 rows=85000.00 loops=1)
+                    Index Cond: (price_type_id = '1'::smallint)
+                    Filter: (value IS NOT NULL)
+                    Index Searches: 1
+                    Buffers: shared hit=5404
+              ->  Index Only Scan using y3_value_scheduled_uq on y3_value q  (cost=0.40..750.58 rows=173 width=16) (actual time=0.399..0.399 rows=0.00 loops=1)
+                    Index Cond: (price_type_id = '1'::smallint)
+                    Heap Fetches: 0
+                    Index Searches: 1
+                    Buffers: shared hit=344
+        ->  Hash  (cost=3102.96..3102.96 rows=84558 width=8) (actual time=16.470..16.470 rows=85000.00 loops=1)
+              Buckets: 131072  Batches: 1  Memory Usage: 4345kB
+              Buffers: shared hit=1614
+              ->  Index Scan using service_branch_id_949e182d on service s  (cost=0.29..3102.96 rows=84558 width=8) (actual time=0.009..9.469 rows=85000.00 loops=1)
+                    Index Cond: (branch_id = '1'::smallint)
+                    Filter: (NOT archived)
+                    Index Searches: 1
+                    Buffers: shared hit=1614
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=51
+Planning Time: 0.318 ms
+Execution Time: 321.881 ms

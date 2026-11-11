@@ -1,17 +1,17 @@
-Nested Loop Left Join  (cost=1.27..7.97 rows=1 width=112) (actual time=0.014..0.015 rows=1.00 loops=1)
+Nested Loop Left Join  (cost=1.27..7.97 rows=1 width=112) (actual time=0.024..0.025 rows=1.00 loops=1)
   Buffers: shared hit=11
-  ->  Nested Loop  (cost=0.84..5.31 rows=1 width=104) (actual time=0.012..0.013 rows=1.00 loops=1)
+  ->  Nested Loop  (cost=0.84..5.31 rows=1 width=104) (actual time=0.018..0.019 rows=1.00 loops=1)
         Buffers: shared hit=8
-        ->  Index Scan using service_pkey on service s  (cost=0.42..2.64 rows=1 width=96) (actual time=0.007..0.008 rows=1.00 loops=1)
+        ->  Index Scan using service_pkey on service s  (cost=0.42..2.64 rows=1 width=96) (actual time=0.003..0.003 rows=1.00 loops=1)
               Index Cond: (id = ANY ('{64293}'::integer[]))
               Index Searches: 1
               Buffers: shared hit=4
-        ->  Index Only Scan using y_value_actual_uq on y_value m  (cost=0.42..2.65 rows=2 width=16) (actual time=0.004..0.004 rows=1.00 loops=1)
+        ->  Index Only Scan using y_value_actual_uq on y_value m  (cost=0.42..2.65 rows=2 width=16) (actual time=0.014..0.015 rows=1.00 loops=1)
               Index Cond: ((service_id = s.id) AND (price_type_id = '1'::smallint))
               Heap Fetches: 0
               Index Searches: 1
               Buffers: shared hit=4
-  ->  Index Only Scan using y_value_actual_uq on y_value i  (cost=0.42..2.64 rows=1 width=16) (actual time=0.001..0.001 rows=0.00 loops=1)
+  ->  Index Only Scan using y_value_actual_uq on y_value i  (cost=0.42..2.64 rows=1 width=16) (actual time=0.005..0.005 rows=0.00 loops=1)
         Index Cond: ((service_id = s.id) AND (price_type_id = '2'::smallint))
         Heap Fetches: 0
         Index Searches: 1
@@ -19,5 +19,5 @@ Nested Loop Left Join  (cost=1.27..7.97 rows=1 width=112) (actual time=0.014..0.
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
 Planning:
   Buffers: shared hit=32
-Planning Time: 0.163 ms
-Execution Time: 0.024 ms
+Planning Time: 0.161 ms
+Execution Time: 0.034 ms

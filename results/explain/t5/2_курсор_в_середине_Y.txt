@@ -1,6 +1,6 @@
-Limit  (cost=0.42..390.57 rows=50 width=164) (actual time=0.018..0.230 rows=50.00 loops=1)
+Limit  (cost=0.42..390.57 rows=50 width=164) (actual time=0.019..0.231 rows=50.00 loops=1)
   Buffers: shared hit=256
-  ->  Index Only Scan using service_page_idx on service s  (cost=0.42..287011.82 rows=36782 width=164) (actual time=0.018..0.227 rows=50.00 loops=1)
+  ->  Index Only Scan using service_page_idx on service s  (cost=0.42..287011.82 rows=36782 width=164) (actual time=0.018..0.228 rows=50.00 loops=1)
         Index Cond: ((branch_id = '1'::smallint) AND (ROW(category_sort, code, name, id) > ROW('566'::smallint, 'A0566.047999'::text, 'Услуга 047999 приём/исследование/процедура'::text, 48000)))
         Heap Fetches: 0
         Index Searches: 1
@@ -29,5 +29,5 @@ Limit  (cost=0.42..390.57 rows=50 width=164) (actual time=0.018..0.230 rows=50.0
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
 Planning:
   Buffers: shared hit=14
-Planning Time: 0.172 ms
-Execution Time: 0.247 ms
+Planning Time: 0.165 ms
+Execution Time: 0.249 ms

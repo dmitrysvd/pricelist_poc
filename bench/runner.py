@@ -11,7 +11,9 @@ from django.conf import settings
 from bench.iface import Op, Ref
 
 MODEL_TABLES = {"X": ["x_row", "x_version"], "X(б)": ["x_row", "x_version"], "X·lat": ["x_row", "x_version"],
-                "Y": ["y_value", "y_version"],
+                "Y": ["y_value", "y_version"], "Y2": ["y2_value", "y2_version"],
+                "Y3": ["y3_value", "y3_version", "y3_current"],
+                "Y·кв": ["y_value", "y_version"], "Y3·кв": ["y3_value", "y3_version", "y3_current"],
                 "общая": ["service", "category", "price_type"]}
 RESULTS = Path(settings.BASE_DIR) / "results"
 LONG_MS, LONG_RUNS = 10_000, 3
@@ -91,6 +93,22 @@ class Result:
         return d
 
 
+def prewarm(conn):
+    """Загрузить все таблицы и индексы датасета в shared_buffers.
+
+    Без этого «прогретый кэш» зависит от того, что выполнялось до прогона:
+    генерация соседнего датасета вытесняет таблицы, и чтение меряет диск,
+    а не модель (первые прогоны в 10 раз медленнее остальных).
+    """
+    conn.autocommit = True
+    conn.execute("CREATE EXTENSION IF NOT EXISTS pg_prewarm")
+    rel = conn.execute("""SELECT count(*), coalesce(sum(pg_prewarm(c.oid)), 0) FROM pg_class c
+        JOIN pg_namespace n ON n.oid = c.relnamespace
+        WHERE n.nspname = 'public' AND c.relkind IN ('r', 'i')""").fetchone()
+    conn.autocommit = False
+    return rel
+
+
 def save_plan(dataset, scenario, variant, model, plan):
     d = RESULTS / "explain" / dataset
     d.mkdir(parents=True, exist_ok=True)
@@ -120,7 +138,8 @@ def run_read(conn, dataset, scenario, variant, model, ops: list[Op], warmup=3):
             for op in ops[:warmup]:
                 run_steps(cur, op)
             conn.rollback()
-            for op in ops:
+            # в замер — только прогоны после прогрева (их параметры не повторяют прогрев)
+            for op in ops[warmup:]:
                 t0 = time.perf_counter()
                 res.rows_returned, _ = run_steps(cur, op)
                 res.times_ms.append((time.perf_counter() - t0) * 1000)

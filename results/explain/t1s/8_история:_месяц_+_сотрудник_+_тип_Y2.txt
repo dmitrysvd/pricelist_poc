@@ -1,0 +1,32 @@
+Limit  (cost=8.50..8.51 rows=2 width=42) (actual time=0.023..0.024 rows=7.00 loops=1)
+  Buffers: shared hit=26
+  ->  Sort  (cost=8.50..8.51 rows=2 width=42) (actual time=0.022..0.023 rows=7.00 loops=1)
+        Sort Key: v.created_at DESC
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=26
+        ->  Nested Loop Semi Join  (cost=4.32..8.49 rows=2 width=42) (actual time=0.013..0.020 rows=7.00 loops=1)
+              Buffers: shared hit=26
+              ->  Bitmap Heap Scan on y2_version v  (cost=3.89..7.07 rows=3 width=42) (actual time=0.010..0.010 rows=7.00 loops=1)
+                    Recheck Cond: ((author_id = '14'::smallint) AND (branch_id = '1'::smallint) AND (created_at >= '2026-04-13 19:38:18.011717+00'::timestamp with time zone) AND (created_at < '2026-05-13 19:38:18.011717+00'::timestamp with time zone))
+                    Heap Blocks: exact=1
+                    Buffers: shared hit=4
+                    ->  BitmapAnd  (cost=3.89..3.89 rows=3 width=0) (actual time=0.006..0.006 rows=0.00 loops=1)
+                          Buffers: shared hit=3
+                          ->  Bitmap Index Scan on y2_version_author_id_8a1910ed  (cost=0.00..1.51 rows=35 width=0) (actual time=0.003..0.003 rows=35.00 loops=1)
+                                Index Cond: (author_id = '14'::smallint)
+                                Index Searches: 1
+                                Buffers: shared hit=1
+                          ->  Bitmap Index Scan on y2_version_branch_created_idx  (cost=0.00..2.12 rows=60 width=0) (actual time=0.003..0.003 rows=62.00 loops=1)
+                                Index Cond: ((branch_id = '1'::smallint) AND (created_at >= '2026-04-13 19:38:18.011717+00'::timestamp with time zone) AND (created_at < '2026-05-13 19:38:18.011717+00'::timestamp with time zone))
+                                Index Searches: 1
+                                Buffers: shared hit=2
+              ->  Index Only Scan using y2_value_version_idx on y2_value x  (cost=0.43..53.17 rows=2472 width=8) (actual time=0.001..0.001 rows=1.00 loops=7)
+                    Index Cond: ((version_id = v.id) AND (price_type_id = '1'::smallint))
+                    Heap Fetches: 0
+                    Index Searches: 7
+                    Buffers: shared hit=22
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=14
+Planning Time: 0.126 ms
+Execution Time: 0.034 ms

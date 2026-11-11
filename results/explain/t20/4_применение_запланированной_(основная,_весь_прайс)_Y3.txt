@@ -1,0 +1,27 @@
+Insert on y3_current  (cost=27058.83..28699.27 rows=82022 width=40) (actual time=0.066..902.130 rows=85000.00 loops=1)
+  Conflict Resolution: UPDATE
+  Conflict Arbiter Indexes: y3_current_pkey
+  Tuples Inserted: 0
+  Conflicting Tuples: 85000
+  Buffers: shared hit=1701133 dirtied=942 written=942
+  I/O Timings: shared write=7.393
+  WAL: records=598171 bytes=47354220 buffers full=387
+  CTE h
+    ->  Update on y3_value  (cost=0.43..27058.83 rows=82022 width=14) (actual time=0.049..613.653 rows=85000.00 loops=1)
+          Buffers: shared hit=1084295 dirtied=942 written=942
+          I/O Timings: shared write=7.393
+          WAL: records=428171 bytes=35814761 buffers full=287
+          ->  Index Scan using y3_value_version_idx on y3_value  (cost=0.43..27058.83 rows=82022 width=14) (actual time=0.009..22.508 rows=85000.00 loops=1)
+                Index Cond: (version_id = '770'::smallint)
+                Index Searches: 1
+                Buffers: shared hit=2912
+  ->  CTE Scan on h  (cost=0.00..1640.44 rows=82022 width=40) (actual time=0.049..633.510 rows=85000.00 loops=1)
+        Storage: Memory  Maximum Storage: 5573kB
+        Buffers: shared hit=1084295 dirtied=942 written=942
+        I/O Timings: shared write=7.393
+        WAL: records=428171 bytes=35814761 buffers full=287
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=6
+Planning Time: 0.057 ms
+Execution Time: 905.785 ms

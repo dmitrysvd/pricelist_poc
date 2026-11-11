@@ -1,0 +1,12 @@
+Delete on y2_value  (cost=0.43..14591.44 rows=0 width=0) (actual time=26.588..26.589 rows=0.00 loops=1)
+  Buffers: shared hit=86834
+  WAL: records=85000 bytes=4590000
+  ->  Index Scan using y2_value_version_idx on y2_value  (cost=0.43..14591.44 rows=87805 width=6) (actual time=0.010..7.623 rows=85000.00 loops=1)
+        Index Cond: (version_id = '735'::smallint)
+        Index Searches: 1
+        Buffers: shared hit=952
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=5
+Planning Time: 0.056 ms
+Execution Time: 26.606 ms

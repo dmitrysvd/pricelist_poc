@@ -1,0 +1,32 @@
+Limit  (cost=0.42..686.55 rows=50 width=164) (actual time=0.022..0.460 rows=50.00 loops=1)
+  Buffers: shared hit=310
+  ->  Index Only Scan using service_page_idx on service s  (cost=0.42..1168985.94 rows=85187 width=164) (actual time=0.022..0.457 rows=50.00 loops=1)
+        Index Cond: (branch_id = '1'::smallint)
+        Heap Fetches: 0
+        Index Searches: 1
+        Buffers: shared hit=310
+        SubPlan 1
+          ->  Aggregate  (cost=8.67..8.68 rows=1 width=32) (actual time=0.008..0.008 rows=1.00 loops=50)
+                Buffers: shared hit=206
+                ->  Index Scan using y3_current_pkey on y3_current c  (cost=0.43..8.63 rows=13 width=15) (actual time=0.001..0.002 rows=12.32 loops=50)
+                      Index Cond: (service_id = s.id)
+                      Filter: (value IS NOT NULL)
+                      Index Searches: 50
+                      Buffers: shared hit=206
+        SubPlan 2
+          ->  Aggregate  (cost=5.00..5.01 rows=1 width=32) (actual time=0.001..0.001 rows=1.00 loops=50)
+                Buffers: shared hit=100
+                ->  Nested Loop  (cost=0.55..4.99 rows=1 width=24) (actual time=0.001..0.001 rows=0.00 loops=50)
+                      Buffers: shared hit=100
+                      ->  Index Scan using y3_value_scheduled_uq on y3_value v  (cost=0.28..2.49 rows=1 width=24) (actual time=0.000..0.000 rows=0.00 loops=50)
+                            Index Cond: (service_id = s.id)
+                            Index Searches: 50
+                            Buffers: shared hit=100
+                      ->  Index Scan using y3_version_pkey on y3_version ver  (cost=0.28..2.49 rows=1 width=16) (never executed)
+                            Index Cond: (id = v.version_id)
+                            Index Searches: 0
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=14
+Planning Time: 0.340 ms
+Execution Time: 0.477 ms

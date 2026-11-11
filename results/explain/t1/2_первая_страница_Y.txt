@@ -1,6 +1,6 @@
-Limit  (cost=0.42..386.29 rows=50 width=164) (actual time=0.018..0.155 rows=50.00 loops=1)
+Limit  (cost=0.42..386.29 rows=50 width=164) (actual time=0.017..0.208 rows=50.00 loops=1)
   Buffers: shared hit=255
-  ->  Index Only Scan using service_page_idx on service s  (cost=0.42..653624.03 rows=84694 width=164) (actual time=0.017..0.152 rows=50.00 loops=1)
+  ->  Index Only Scan using service_page_idx on service s  (cost=0.42..653624.03 rows=84694 width=164) (actual time=0.017..0.204 rows=50.00 loops=1)
         Index Cond: (branch_id = '1'::smallint)
         Heap Fetches: 0
         Index Searches: 1
@@ -29,5 +29,5 @@ Limit  (cost=0.42..386.29 rows=50 width=164) (actual time=0.018..0.155 rows=50.0
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
 Planning:
   Buffers: shared hit=14
-Planning Time: 0.157 ms
-Execution Time: 0.173 ms
+Planning Time: 0.205 ms
+Execution Time: 0.230 ms

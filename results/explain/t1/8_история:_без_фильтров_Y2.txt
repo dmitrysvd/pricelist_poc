@@ -1,0 +1,9 @@
+Limit  (cost=0.28..2.04 rows=50 width=42) (actual time=0.009..0.018 rows=50.00 loops=1)
+  Buffers: shared hit=4
+  ->  Index Scan Backward using y2_version_branch_created_idx on y2_version v  (cost=0.28..27.91 rows=784 width=42) (actual time=0.008..0.015 rows=50.00 loops=1)
+        Index Cond: (branch_id = '1'::smallint)
+        Index Searches: 1
+        Buffers: shared hit=4
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning Time: 0.035 ms
+Execution Time: 0.026 ms

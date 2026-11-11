@@ -1,8 +1,8 @@
-Limit  (cost=0.84..435.05 rows=50 width=164) (actual time=0.048..0.383 rows=50.00 loops=1)
+Limit  (cost=0.84..435.05 rows=50 width=164) (actual time=0.058..0.498 rows=50.00 loops=1)
   Buffers: shared hit=685
-  ->  Nested Loop Anti Join  (cost=0.84..389174.32 rows=44814 width=164) (actual time=0.047..0.380 rows=50.00 loops=1)
+  ->  Nested Loop Anti Join  (cost=0.84..389174.32 rows=44814 width=164) (actual time=0.058..0.493 rows=50.00 loops=1)
         Buffers: shared hit=685
-        ->  Index Only Scan using service_page_idx on service s  (cost=0.42..3045.09 rows=77390 width=100) (actual time=0.005..0.023 rows=142.00 loops=1)
+        ->  Index Only Scan using service_page_idx on service s  (cost=0.42..3045.09 rows=77390 width=100) (actual time=0.018..0.046 rows=142.00 loops=1)
               Index Cond: ((branch_id = '1'::smallint) AND (ROW(category_sort, code, name, id) > ROW('95'::smallint, 'A0095.007999'::text, 'Услуга 007999 приём/исследование/процедура'::text, '8000'::smallint)))
               Heap Fetches: 0
               Index Searches: 1
@@ -14,7 +14,7 @@ Limit  (cost=0.84..435.05 rows=50 width=164) (actual time=0.048..0.383 rows=50.0
               Index Searches: 142
               Buffers: shared hit=427
         SubPlan 1
-          ->  Aggregate  (cost=2.73..2.74 rows=1 width=32) (actual time=0.003..0.003 rows=1.00 loops=50)
+          ->  Aggregate  (cost=2.73..2.74 rows=1 width=32) (actual time=0.004..0.004 rows=1.00 loops=50)
                 Buffers: shared hit=151
                 ->  Index Only Scan using y_value_actual_uq on y_value v_1  (cost=0.42..2.71 rows=5 width=15) (actual time=0.001..0.001 rows=3.04 loops=50)
                       Index Cond: (service_id = s.id)
@@ -37,5 +37,5 @@ Limit  (cost=0.84..435.05 rows=50 width=164) (actual time=0.048..0.383 rows=50.0
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
 Planning:
   Buffers: shared hit=30
-Planning Time: 0.249 ms
-Execution Time: 0.404 ms
+Planning Time: 0.266 ms
+Execution Time: 0.529 ms

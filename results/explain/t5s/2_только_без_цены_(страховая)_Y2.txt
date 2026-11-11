@@ -1,0 +1,56 @@
+Limit  (cost=0.42..863.02 rows=50 width=164) (actual time=0.070..0.859 rows=50.00 loops=1)
+  Buffers: shared hit=1335
+  ->  Index Only Scan using service_page_idx on service s  (cost=0.42..667567.60 rows=38695 width=164) (actual time=0.070..0.855 rows=50.00 loops=1)
+        Index Cond: ((branch_id = '1'::smallint) AND (ROW(category_sort, code, name, id) > ROW('95'::smallint, 'A0095.007999'::text, 'Услуга 007999 приём/исследование/процедура'::text, '8000'::smallint)))
+        Filter: (NOT EXISTS(SubPlan 3))
+        Rows Removed by Filter: 92
+        Heap Fetches: 0
+        Index Searches: 1
+        Buffers: shared hit=1335
+        SubPlan 1
+          ->  Aggregate  (cost=9.04..9.05 rows=1 width=32) (actual time=0.011..0.011 rows=1.00 loops=50)
+                Buffers: shared hit=801
+                ->  Nested Loop  (cost=0.43..9.03 rows=5 width=15) (actual time=0.002..0.008 rows=3.04 loops=50)
+                      Buffers: shared hit=801
+                      ->  Seq Scan on price_type pt  (cost=0.00..1.19 rows=5 width=8) (actual time=0.000..0.001 rows=5.00 loops=50)
+                            Filter: (branch_id = s.branch_id)
+                            Rows Removed by Filter: 10
+                            Buffers: shared hit=50
+                      ->  Subquery Scan on lv  (cost=0.43..1.56 rows=1 width=7) (actual time=0.001..0.001 rows=0.61 loops=250)
+                            Filter: (lv.value IS NOT NULL)
+                            Buffers: shared hit=751
+                            ->  Limit  (cost=0.43..1.55 rows=1 width=31) (actual time=0.001..0.001 rows=0.61 loops=250)
+                                  Buffers: shared hit=751
+                                  ->  Index Only Scan Backward using y2_value_latest_uq on y2_value v  (cost=0.43..1.55 rows=1 width=31) (actual time=0.001..0.001 rows=0.61 loops=250)
+                                        Index Cond: ((service_id = s.id) AND (price_type_id = pt.id))
+                                        Heap Fetches: 0
+                                        Index Searches: 250
+                                        Buffers: shared hit=751
+        SubPlan 2
+          ->  Aggregate  (cost=5.00..5.01 rows=1 width=32) (actual time=0.001..0.001 rows=1.00 loops=50)
+                Buffers: shared hit=100
+                ->  Nested Loop  (cost=0.55..4.99 rows=1 width=23) (actual time=0.001..0.001 rows=0.00 loops=50)
+                      Buffers: shared hit=100
+                      ->  Index Scan using y2_value_scheduled_uq on y2_value v_1  (cost=0.28..2.49 rows=1 width=23) (actual time=0.001..0.001 rows=0.00 loops=50)
+                            Index Cond: (service_id = s.id)
+                            Index Searches: 50
+                            Buffers: shared hit=100
+                      ->  Index Scan using y2_version_pkey on y2_version ver  (cost=0.28..2.49 rows=1 width=16) (never executed)
+                            Index Cond: (id = v_1.version_id)
+                            Index Searches: 0
+        SubPlan 3
+          ->  Subquery Scan on mv  (cost=0.43..1.56 rows=1 width=0) (actual time=0.001..0.001 rows=0.65 loops=142)
+                Filter: (mv.value IS NOT NULL)
+                Buffers: shared hit=427
+                ->  Limit  (cost=0.43..1.55 rows=1 width=31) (actual time=0.001..0.001 rows=0.65 loops=142)
+                      Buffers: shared hit=427
+                      ->  Index Only Scan Backward using y2_value_latest_uq on y2_value v_2  (cost=0.43..1.55 rows=1 width=31) (actual time=0.001..0.001 rows=0.65 loops=142)
+                            Index Cond: ((service_id = s.id) AND (price_type_id = '2'::smallint))
+                            Heap Fetches: 0
+                            Index Searches: 142
+                            Buffers: shared hit=427
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=14
+Planning Time: 0.249 ms
+Execution Time: 0.892 ms

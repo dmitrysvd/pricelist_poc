@@ -1,18 +1,18 @@
-Sort  (cost=1356.73..1357.36 rows=250 width=125) (actual time=0.654..0.660 rows=181.00 loops=1)
+Sort  (cost=1356.73..1357.36 rows=250 width=125) (actual time=0.674..0.680 rows=181.00 loops=1)
   Sort Key: s.category_sort, s.code, s.name, s.id, pt.id
   Sort Method: quicksort  Memory: 49kB
   Buffers: shared hit=1663
-  ->  Nested Loop Left Join  (cost=1.56..1346.77 rows=250 width=125) (actual time=0.023..0.604 rows=181.00 loops=1)
+  ->  Nested Loop Left Join  (cost=1.56..1346.77 rows=250 width=125) (actual time=0.023..0.622 rows=181.00 loops=1)
         Join Filter: (v.ver = y_version.number)
         Rows Removed by Join Filter: 181
         Buffers: shared hit=1663
-        ->  Nested Loop  (cost=1.13..681.15 rows=250 width=140) (actual time=0.020..0.401 rows=181.00 loops=1)
+        ->  Nested Loop  (cost=1.13..681.15 rows=250 width=140) (actual time=0.020..0.412 rows=181.00 loops=1)
               Buffers: shared hit=939
-              ->  Index Scan using y_version_pkey on y_version  (cost=0.28..2.49 rows=1 width=8) (actual time=0.002..0.003 rows=1.00 loops=1)
+              ->  Index Scan using y_version_pkey on y_version  (cost=0.28..2.49 rows=1 width=8) (actual time=0.003..0.003 rows=1.00 loops=1)
                     Index Cond: (id = '394'::smallint)
                     Index Searches: 1
                     Buffers: shared hit=3
-              ->  Nested Loop  (cost=0.85..676.16 rows=250 width=132) (actual time=0.017..0.383 rows=181.00 loops=1)
+              ->  Nested Loop  (cost=0.85..676.16 rows=250 width=132) (actual time=0.017..0.392 rows=181.00 loops=1)
                     Buffers: shared hit=936
                     ->  Limit  (cost=0.42..2.41 rows=50 width=100) (actual time=0.010..0.021 rows=50.00 loops=1)
                           Buffers: shared hit=5
@@ -37,5 +37,5 @@ Sort  (cost=1356.73..1357.36 rows=250 width=125) (actual time=0.654..0.660 rows=
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
 Planning:
   Buffers: shared hit=8
-Planning Time: 0.235 ms
-Execution Time: 0.689 ms
+Planning Time: 0.225 ms
+Execution Time: 0.711 ms

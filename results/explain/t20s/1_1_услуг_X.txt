@@ -11,5 +11,5 @@ Nested Loop  (cost=0.84..6.41 rows=1 width=134) (actual time=0.007..0.008 rows=1
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
 Planning:
   Buffers: shared hit=17
-Planning Time: 0.103 ms
-Execution Time: 0.015 ms
+Planning Time: 0.117 ms
+Execution Time: 0.017 ms

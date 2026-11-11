@@ -5,7 +5,7 @@ Limit  (cost=7.19..7.20 rows=1 width=34) (actual time=0.016..0.017 rows=7.00 loo
         Sort Method: quicksort  Memory: 25kB
         Buffers: shared hit=8
         ->  Bitmap Heap Scan on x_version v  (cost=3.89..7.18 rows=1 width=34) (actual time=0.012..0.014 rows=7.00 loops=1)
-              Recheck Cond: ((author_id = '14'::smallint) AND (branch_id = '1'::smallint) AND (created_at >= '2026-04-13 18:45:54.842009+00'::timestamp with time zone) AND (created_at < '2026-05-13 18:45:54.842009+00'::timestamp with time zone))
+              Recheck Cond: ((author_id = '14'::smallint) AND (branch_id = '1'::smallint) AND (created_at >= '2026-04-13 19:38:18.011717+00'::timestamp with time zone) AND (created_at < '2026-05-13 19:38:18.011717+00'::timestamp with time zone))
               Filter: ('1'::smallint = ANY (price_type_ids))
               Heap Blocks: exact=5
               Buffers: shared hit=8
@@ -16,9 +16,9 @@ Limit  (cost=7.19..7.20 rows=1 width=34) (actual time=0.016..0.017 rows=7.00 loo
                           Index Searches: 1
                           Buffers: shared hit=1
                     ->  Bitmap Index Scan on x_version_branch_created_idx  (cost=0.00..2.12 rows=60 width=0) (actual time=0.004..0.004 rows=62.00 loops=1)
-                          Index Cond: ((branch_id = '1'::smallint) AND (created_at >= '2026-04-13 18:45:54.842009+00'::timestamp with time zone) AND (created_at < '2026-05-13 18:45:54.842009+00'::timestamp with time zone))
+                          Index Cond: ((branch_id = '1'::smallint) AND (created_at >= '2026-04-13 19:38:18.011717+00'::timestamp with time zone) AND (created_at < '2026-05-13 19:38:18.011717+00'::timestamp with time zone))
                           Index Searches: 1
                           Buffers: shared hit=2
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
-Planning Time: 0.043 ms
-Execution Time: 0.025 ms
+Planning Time: 0.047 ms
+Execution Time: 0.026 ms

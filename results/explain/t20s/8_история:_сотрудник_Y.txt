@@ -1,6 +1,6 @@
-Limit  (cost=10.68..10.80 rows=48 width=42) (actual time=0.019..0.023 rows=48.00 loops=1)
+Limit  (cost=10.68..10.80 rows=48 width=42) (actual time=0.019..0.024 rows=48.00 loops=1)
   Buffers: shared hit=8
-  ->  Sort  (cost=10.68..10.80 rows=48 width=42) (actual time=0.019..0.020 rows=48.00 loops=1)
+  ->  Sort  (cost=10.68..10.80 rows=48 width=42) (actual time=0.019..0.021 rows=48.00 loops=1)
         Sort Key: created_at DESC
         Sort Method: quicksort  Memory: 28kB
         Buffers: shared hit=8
@@ -14,5 +14,5 @@ Limit  (cost=10.68..10.80 rows=48 width=42) (actual time=0.019..0.023 rows=48.00
                     Index Searches: 1
                     Buffers: shared hit=1
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
-Planning Time: 0.033 ms
-Execution Time: 0.030 ms
+Planning Time: 0.035 ms
+Execution Time: 0.031 ms

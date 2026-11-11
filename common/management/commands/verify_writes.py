@@ -26,6 +26,30 @@ SELECT (SELECT count(*) FROM (SELECT * FROM y EXCEPT SELECT * FROM xn) a),
        (SELECT count(*) FROM y)
 """
 
+# Y2 против Y: актуальное значение пары в Y2 — последняя применённая запись.
+DIFF_Y2 = """
+WITH y AS (SELECT service_id, price_type_id, value FROM y_value WHERE status = 'A' AND value IS NOT NULL),
+y2 AS (
+  SELECT DISTINCT ON (service_id, price_type_id) service_id, price_type_id, value
+  FROM y2_value WHERE ver IS NOT NULL ORDER BY service_id, price_type_id, ver DESC
+), y2n AS (SELECT * FROM y2 WHERE value IS NOT NULL)
+SELECT (SELECT count(*) FROM (SELECT * FROM y EXCEPT SELECT * FROM y2n) a),
+       (SELECT count(*) FROM (SELECT * FROM y2n EXCEPT SELECT * FROM y) b)
+"""
+
+# Y3: голова совпадает с актуальными ценами Y и с последней записью своей истории
+# (второе держит не схема, а операции — поэтому проверяется отдельно).
+DIFF_Y3 = """
+WITH y AS (SELECT service_id, price_type_id, value FROM y_value WHERE status = 'A'),
+c AS (SELECT service_id, price_type_id, value FROM y3_current),
+h AS (
+  SELECT DISTINCT ON (service_id, price_type_id) service_id, price_type_id, value
+  FROM y3_value WHERE ver IS NOT NULL ORDER BY service_id, price_type_id, ver DESC
+)
+SELECT (SELECT count(*) FROM ((SELECT * FROM y EXCEPT SELECT * FROM c) UNION ALL (SELECT * FROM c EXCEPT SELECT * FROM y)) a),
+       (SELECT count(*) FROM ((SELECT * FROM h EXCEPT SELECT * FROM c) UNION ALL (SELECT * FROM c EXCEPT SELECT * FROM h)) b)
+"""
+
 # Восстановление: актуальные цены филиала == срез Y на версию V.
 RESTORE_CHECK = """
 WITH n AS (SELECT number AS n FROM y_version WHERE id = %(v)s),
@@ -81,16 +105,20 @@ class Command(BaseCommand):
                         if csql:
                             for stmt in filter(str.strip, csql.split(";")):
                                 cur.execute(stmt, cparams)
+                        from model_y2.impl import Y2Model
                         x, y = XModel(), YModel()
                         x.main_type = ctx.main
-                        for m in (x, y):
+                        from model_y3.impl import Y3Model
+                        cur.execute("SELECT to_regclass('y3_current') IS NOT NULL AND EXISTS (SELECT 1 FROM y3_current)")
+                        with_y3 = cur.fetchone()[0] and sc in ("3", "4", "5", "6", "9")
+                        for m in (x, y, Y2Model()) + ((Y3Model(),) if with_y3 else ()):
                             arg = None
                             if setup:
                                 run_steps(cur, setup(m))
-                                t = "x_version" if m.name == "X" else "y_version"
+                                t = {"X": "x_version", "Y": "y_version", "Y2": "y2_version", "Y3": "y3_version"}[m.name]
                                 cur.execute(f"SELECT max(id) FROM {t} WHERE status = 'S'")
                                 arg = cur.fetchone()[0]
-                            if sc == "10" and m.name == "Y":
+                            if sc == "10" and m.name in ("Y", "Y2"):
                                 # тип цены общий: Y заполняет тот же тип, что создал шаг X
                                 cur.execute("SELECT max(id) FROM price_type")
                                 tid = cur.fetchone()[0]
@@ -98,7 +126,7 @@ class Command(BaseCommand):
                                 op.steps[0].sql = "SELECT %(tid)s::bigint AS id, %(tid)s::text AS key"
                                 op.steps[0].params = {"tid": tid}
                                 run_steps(cur, op)
-                            elif sc == "12" and m.name == "Y":
+                            elif sc == "12" and m.name in ("Y", "Y2"):
                                 # общая часть импорта уже выполнена шагами X: Y берёт те же услуги
                                 op = m.import_prices(3, 1)
                                 op.steps = [s for s in op.steps if s.name not in ("cats", "svcs")]
@@ -108,15 +136,21 @@ class Command(BaseCommand):
                         cur.execute("SET CONSTRAINTS ALL IMMEDIATE")
                         cur.execute(DIFF)
                         only_y, only_x, total = cur.fetchone()
-                        extra = ""
+                        cur.execute(DIFF_Y2)
+                        y2_a, y2_b = cur.fetchone()
+                        extra = f", Y2≠Y: {y2_a + y2_b}"
+                        if with_y3:
+                            cur.execute(DIFF_Y3)
+                            c_y, c_h = cur.fetchone()
+                            extra += f", Y3 голова≠Y: {c_y}, Y3 голова≠история: {c_h}"
                         if sc == "9":
                             cur.execute(RESTORE_CHECK, {"v": ctx.v_half})
-                            extra = f", != срезу на V: {cur.fetchone()[0]}"
+                            extra += f", != срезу на V: {cur.fetchone()[0]}"
                         if sc == "11":
                             cur.execute(COPY_CHECK)
-                            extra = f", B != A: {cur.fetchone()[0]}"
+                            extra += f", B != A: {cur.fetchone()[0]}"
                     conn.rollback()
-                    ok = only_x == only_y == 0 and (not extra or extra.endswith(": 0"))
+                    ok = only_x == only_y == 0 and all(part.endswith(": 0") for part in extra.split(", ")[1:])
                     bad += not ok
                     mark = self.style.SUCCESS("ok") if ok else self.style.ERROR("РАЗНИЦА")
                     self.stdout.write(f"[{ds}] сц.{sc} {variant:<48} {mark} (только Y: {only_y}, "

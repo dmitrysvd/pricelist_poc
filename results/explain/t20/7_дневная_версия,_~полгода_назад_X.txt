@@ -1,29 +1,29 @@
-Sort  (cost=453.47..453.64 rows=69 width=631) (actual time=0.748..0.751 rows=50.00 loops=1)
+Sort  (cost=453.47..453.64 rows=69 width=631) (actual time=0.752..0.754 rows=50.00 loops=1)
   Sort Key: s.category_sort, s.code, s.name, s.id
   Sort Method: quicksort  Memory: 44kB
   Buffers: shared hit=2231
-  ->  Nested Loop Left Join  (cost=5.33..451.36 rows=69 width=631) (actual time=0.089..0.718 rows=50.00 loops=1)
+  ->  Nested Loop Left Join  (cost=5.33..451.36 rows=69 width=631) (actual time=0.078..0.723 rows=50.00 loops=1)
         Join Filter: ((unnest(x_version_1.row_ids)) IS NOT NULL)
         Rows Removed by Join Filter: 50
         Buffers: shared hit=2231
-        ->  Hash Left Join  (cost=4.91..416.58 rows=69 width=381) (actual time=0.082..0.658 rows=50.00 loops=1)
+        ->  Hash Left Join  (cost=4.91..416.58 rows=69 width=381) (actual time=0.073..0.666 rows=50.00 loops=1)
               Hash Cond: (r.id = (unnest(x_version_1.row_ids)))
               Buffers: shared hit=2031
-              ->  Nested Loop Left Join  (cost=1.55..412.95 rows=69 width=373) (actual time=0.051..0.621 rows=50.00 loops=1)
+              ->  Nested Loop Left Join  (cost=1.55..412.95 rows=69 width=373) (actual time=0.047..0.634 rows=50.00 loops=1)
                     Filter: ((c.id IS NULL) OR (c.valid_from > x_version.last_change_at))
                     Rows Removed by Filter: 324
                     Buffers: shared hit=2028
-                    ->  Nested Loop  (cost=1.12..308.75 rows=206 width=389) (actual time=0.035..0.229 rows=374.00 loops=1)
+                    ->  Nested Loop  (cost=1.12..308.75 rows=206 width=389) (actual time=0.028..0.221 rows=374.00 loops=1)
                           Buffers: shared hit=532
-                          ->  Index Scan using x_version_pkey on x_version  (cost=0.28..2.49 rows=1 width=8) (actual time=0.006..0.007 rows=1.00 loops=1)
+                          ->  Index Scan using x_version_pkey on x_version  (cost=0.28..2.49 rows=1 width=8) (actual time=0.004..0.005 rows=1.00 loops=1)
                                 Index Cond: (id = '375'::smallint)
                                 Index Searches: 1
                                 Buffers: shared hit=3
-                          ->  Nested Loop  (cost=0.85..304.26 rows=200 width=389) (actual time=0.027..0.191 rows=374.00 loops=1)
+                          ->  Nested Loop  (cost=0.85..304.26 rows=200 width=389) (actual time=0.023..0.189 rows=374.00 loops=1)
                                 Buffers: shared hit=529
-                                ->  Limit  (cost=0.42..2.41 rows=50 width=100) (actual time=0.021..0.036 rows=50.00 loops=1)
+                                ->  Limit  (cost=0.42..2.41 rows=50 width=100) (actual time=0.016..0.028 rows=50.00 loops=1)
                                       Buffers: shared hit=5
-                                      ->  Index Only Scan using service_page_idx on service s  (cost=0.42..845.09 rows=21267 width=100) (actual time=0.021..0.033 rows=50.00 loops=1)
+                                      ->  Index Only Scan using service_page_idx on service s  (cost=0.42..845.09 rows=21267 width=100) (actual time=0.016..0.025 rows=50.00 loops=1)
                                             Index Cond: ((branch_id = '1'::smallint) AND (ROW(category_sort, code, name, id) > ROW('753'::smallint, 'A0753.063999'::text, 'Услуга 063999 приём/исследование/процедура'::text, 64000)))
                                             Heap Fetches: 0
                                             Index Searches: 1
@@ -36,10 +36,10 @@ Sort  (cost=453.47..453.64 rows=69 width=631) (actual time=0.748..0.751 rows=50.
                           Index Cond: (id = r.child_id)
                           Index Searches: 374
                           Buffers: shared hit=1496
-              ->  Hash  (cost=2.75..2.75 rows=49 width=8) (actual time=0.017..0.017 rows=76.00 loops=1)
+              ->  Hash  (cost=2.75..2.75 rows=49 width=8) (actual time=0.021..0.021 rows=76.00 loops=1)
                     Buckets: 1024  Batches: 1  Memory Usage: 11kB
                     Buffers: shared hit=3
-                    ->  ProjectSet  (cost=0.28..2.75 rows=49 width=8) (actual time=0.005..0.009 rows=76.00 loops=1)
+                    ->  ProjectSet  (cost=0.28..2.75 rows=49 width=8) (actual time=0.005..0.008 rows=76.00 loops=1)
                           Buffers: shared hit=3
                           ->  Index Scan using x_version_pkey on x_version x_version_1  (cost=0.28..2.49 rows=1 width=403) (actual time=0.004..0.004 rows=1.00 loops=1)
                                 Index Cond: (id = '375'::smallint)
@@ -52,5 +52,5 @@ Sort  (cost=453.47..453.64 rows=69 width=631) (actual time=0.748..0.751 rows=50.
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
 Planning:
   Buffers: shared hit=33
-Planning Time: 0.474 ms
-Execution Time: 0.796 ms
+Planning Time: 0.506 ms
+Execution Time: 0.782 ms

@@ -1,23 +1,23 @@
-Limit  (cost=8.52..8.53 rows=1 width=42) (actual time=0.030..0.031 rows=6.00 loops=1)
+Limit  (cost=8.52..8.53 rows=1 width=42) (actual time=0.023..0.024 rows=6.00 loops=1)
   Buffers: shared hit=30
-  ->  Sort  (cost=8.52..8.53 rows=1 width=42) (actual time=0.029..0.030 rows=6.00 loops=1)
+  ->  Sort  (cost=8.52..8.53 rows=1 width=42) (actual time=0.022..0.023 rows=6.00 loops=1)
         Sort Key: v.created_at DESC
         Sort Method: quicksort  Memory: 25kB
         Buffers: shared hit=30
-        ->  Nested Loop Semi Join  (cost=4.36..8.51 rows=1 width=42) (actual time=0.016..0.027 rows=6.00 loops=1)
+        ->  Nested Loop Semi Join  (cost=4.36..8.51 rows=1 width=42) (actual time=0.012..0.021 rows=6.00 loops=1)
               Buffers: shared hit=30
-              ->  Bitmap Heap Scan on y_version v  (cost=3.93..7.11 rows=3 width=42) (actual time=0.012..0.014 rows=8.00 loops=1)
-                    Recheck Cond: ((author_id = '1'::smallint) AND (branch_id = '1'::smallint) AND (created_at >= '2026-04-13 18:05:52.556452+00'::timestamp with time zone) AND (created_at < '2026-05-13 18:05:52.556452+00'::timestamp with time zone))
+              ->  Bitmap Heap Scan on y_version v  (cost=3.93..7.11 rows=3 width=42) (actual time=0.009..0.011 rows=8.00 loops=1)
+                    Recheck Cond: ((author_id = '1'::smallint) AND (branch_id = '1'::smallint) AND (created_at >= '2026-04-13 19:35:11.911382+00'::timestamp with time zone) AND (created_at < '2026-05-13 19:35:11.911382+00'::timestamp with time zone))
                     Heap Blocks: exact=2
                     Buffers: shared hit=5
-                    ->  BitmapAnd  (cost=3.93..3.93 rows=3 width=0) (actual time=0.009..0.009 rows=0.00 loops=1)
+                    ->  BitmapAnd  (cost=3.93..3.93 rows=3 width=0) (actual time=0.007..0.007 rows=0.00 loops=1)
                           Buffers: shared hit=3
-                          ->  Bitmap Index Scan on y_version_author_id_fcfd8903  (cost=0.00..1.58 rows=44 width=0) (actual time=0.003..0.003 rows=44.00 loops=1)
+                          ->  Bitmap Index Scan on y_version_author_id_fcfd8903  (cost=0.00..1.58 rows=44 width=0) (actual time=0.002..0.002 rows=44.00 loops=1)
                                 Index Cond: (author_id = '1'::smallint)
                                 Index Searches: 1
                                 Buffers: shared hit=1
-                          ->  Bitmap Index Scan on y_version_branch_created_idx  (cost=0.00..2.10 rows=58 width=0) (actual time=0.005..0.005 rows=59.00 loops=1)
-                                Index Cond: ((branch_id = '1'::smallint) AND (created_at >= '2026-04-13 18:05:52.556452+00'::timestamp with time zone) AND (created_at < '2026-05-13 18:05:52.556452+00'::timestamp with time zone))
+                          ->  Bitmap Index Scan on y_version_branch_created_idx  (cost=0.00..2.10 rows=58 width=0) (actual time=0.004..0.004 rows=59.00 loops=1)
+                                Index Cond: ((branch_id = '1'::smallint) AND (created_at >= '2026-04-13 19:35:11.911382+00'::timestamp with time zone) AND (created_at < '2026-05-13 19:35:11.911382+00'::timestamp with time zone))
                                 Index Searches: 1
                                 Buffers: shared hit=2
               ->  Index Only Scan using y_value_version_idx on y_value x  (cost=0.43..46.80 rows=2174 width=8) (actual time=0.001..0.001 rows=0.75 loops=8)
@@ -27,6 +27,6 @@ Limit  (cost=8.52..8.53 rows=1 width=42) (actual time=0.030..0.031 rows=6.00 loo
                     Buffers: shared hit=25
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
 Planning:
-  Buffers: shared hit=14
-Planning Time: 0.148 ms
-Execution Time: 0.044 ms
+  Buffers: shared hit=15
+Planning Time: 0.115 ms
+Execution Time: 0.033 ms

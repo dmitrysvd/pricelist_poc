@@ -1,0 +1,18 @@
+Merge Join  (cost=0.85..52.14 rows=1 width=160) (actual time=0.014..0.046 rows=10.00 loops=1)
+  Merge Cond: (s.id = v.service_id)
+  Buffers: shared hit=80
+  ->  Index Scan using service_pkey on service s  (cost=0.42..16.48 rows=10 width=96) (actual time=0.005..0.016 rows=10.00 loops=1)
+        Index Cond: (id = ANY ('{22928,59352,6181,82304,7913,17403,6330,48596,63066,34117}'::integer[]))
+        Index Searches: 10
+        Buffers: shared hit=40
+  ->  GroupAggregate  (cost=0.43..35.53 rows=8 width=72) (actual time=0.008..0.026 rows=10.00 loops=1)
+        Group Key: v.service_id
+        Filter: (max(v.value) FILTER (WHERE (v.price_type_id = '1'::smallint)) IS NOT NULL)
+        Buffers: shared hit=40
+        ->  Index Scan using y3_current_pkey on y3_current v  (cost=0.43..35.35 rows=8 width=23) (actual time=0.004..0.020 rows=16.00 loops=1)
+              Index Cond: ((service_id = ANY ('{22928,59352,6181,82304,7913,17403,6330,48596,63066,34117}'::integer[])) AND (price_type_id = ANY ('{1,2}'::smallint[])))
+              Index Searches: 10
+              Buffers: shared hit=40
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning Time: 0.076 ms
+Execution Time: 0.057 ms

@@ -1,0 +1,34 @@
+Insert on y3_value  (cost=4192.74..41972.92 rows=0 width=0) (actual time=362.768..362.770 rows=0.00 loops=1)
+  Buffers: shared hit=631788 dirtied=1047 written=1047
+  I/O Timings: shared write=6.109
+  WAL: records=344018 bytes=26966155 buffers full=701
+  ->  Hash Join  (cost=4192.74..41972.92 rows=41220 width=56) (actual time=22.385..138.243 rows=85000.00 loops=1)
+        Hash Cond: (c.service_id = s.id)
+        Buffers: shared hit=107080
+        WAL: records=2576 bytes=255024 buffers full=7
+        ->  Merge Anti Join  (cost=0.83..37049.84 rows=82258 width=23) (actual time=5.629..68.591 rows=85000.00 loops=1)
+              Merge Cond: (c.service_id = q.service_id)
+              Buffers: shared hit=20466
+              ->  Index Scan using y3_current_pkey on y3_current c  (cost=0.43..36082.36 rows=82292 width=23) (actual time=0.013..55.736 rows=85000.00 loops=1)
+                    Index Cond: (price_type_id = '1'::smallint)
+                    Filter: (value IS NOT NULL)
+                    Index Searches: 1
+                    Buffers: shared hit=19096
+              ->  Index Only Scan using y3_value_scheduled_uq on y3_value q  (cost=0.40..761.24 rows=67 width=16) (actual time=5.614..5.615 rows=0.00 loops=1)
+                    Index Cond: (price_type_id = '1'::smallint)
+                    Heap Fetches: 85000
+                    Index Searches: 1
+                    Buffers: shared hit=1370
+        ->  Hash  (cost=3127.07..3127.07 rows=85187 width=8) (actual time=16.688..16.689 rows=85000.00 loops=1)
+              Buckets: 131072  Batches: 1  Memory Usage: 4345kB
+              Buffers: shared hit=1614
+              ->  Index Scan using service_branch_id_949e182d on service s  (cost=0.29..3127.07 rows=85187 width=8) (actual time=0.009..9.189 rows=85000.00 loops=1)
+                    Index Cond: (branch_id = '1'::smallint)
+                    Filter: (NOT archived)
+                    Index Searches: 1
+                    Buffers: shared hit=1614
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=44
+Planning Time: 0.332 ms
+Execution Time: 364.462 ms

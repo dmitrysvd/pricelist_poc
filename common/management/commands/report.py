@@ -39,14 +39,14 @@ def kb(v):
     return f"{v / 1024:.0f} КБ" if abs(v) < 1024 * 1024 else f"{v / 1024 / 1024:.1f} МБ"
 
 
-def ratio_note(x, y, what="быстрее", xname="X"):
+def ratio_note(x, y, what="быстрее", xname="X", yname="Y"):
     if not x or not y:
         return ""
     if max(x, y) / min(x, y) < 1.15:
         return "в пределах 15%"
     r = y / x if x < y else x / y
     k = f"{r:.1f}" if r < 100 else f"{r:.0f}"
-    return f"{xname} {what} в {k}×" if x < y else f"Y {what} в {k}×"
+    return f"{xname} {what} в {k}×" if x < y else f"{yname} {what} в {k}×"
 
 
 class Command(BaseCommand):
@@ -57,7 +57,8 @@ class Command(BaseCommand):
         rows = []
         for f in sorted((RES / "raw").glob("*.json")):
             # smoke — отладочные прогоны, wm — эксперимент с work_mem (в отдельном разделе)
-            if "smoke" in f.name or "_wm" in f.name:
+            # _cold — прогоны с вытесненным кэшем (чтение меряет диск, а не модель)
+            if "smoke" in f.name or "_wm" in f.name or "_cold" in f.name:
                 continue
             rows += json.loads(f.read_text())
         # последний прогон побеждает
@@ -88,11 +89,14 @@ class Command(BaseCommand):
             expanded = []
             for var, ds in keys:
                 ms_ = by_sc[sc][(var, ds)]
-                expanded.append((var, ds, ms_.get("X", {}), ms_.get("Y", {}), "X"))
+                expanded.append((var, ds, ms_.get("X", {}), ms_.get("Y", {}), "X", "Y"))
                 for alt in ("X(б)", "X·lat"):
                     if alt in ms_:
-                        expanded.append((f"{var} — {alt}", ds, ms_[alt], ms_.get("Y", {}), alt))
-            for var, ds, x, y, xname in expanded:
+                        expanded.append((f"{var} — {alt}", ds, ms_[alt], ms_.get("Y", {}), alt, "Y"))
+                if "Y2" in ms_:
+                    # Y2 (append-only Y) сравнивается с X того же прогона
+                    expanded.append((f"{var} — Y2 против X", ds, ms_.get("X", {}), ms_["Y2"], "X", "Y2"))
+            for var, ds, x, y, xname, yname in expanded:
                 err = " ".join(f"{m}: ОШИБКА {r['error'][:80]}" for m, r in (("X", x), ("Y", y)) if r.get("error"))
                 def t(r):
                     n = len(r.get("times_ms") or [])
@@ -100,7 +104,7 @@ class Command(BaseCommand):
                         return f"{ms(r.get('p50'))} / max {ms(max(r['times_ms']))} (n={n})"
                     return f"{ms(r.get('p50'))} / {ms(r.get('p95'))}"
                 tx, ty = t(x), t(y)
-                note = err or ratio_note(x.get("p50"), y.get("p50"), xname=xname)
+                note = err or ratio_note(x.get("p50"), y.get("p50"), xname=xname, yname=yname)
                 if write:
                     def tup(r):
                         t = r.get("tuples") or {}
@@ -115,7 +119,7 @@ class Command(BaseCommand):
                     wx = statistics.median(x["wal_bytes"]) if x.get("wal_bytes") else None
                     wy = statistics.median(y["wal_bytes"]) if y.get("wal_bytes") else None
                     if not err and wx and wy:
-                        note += "; WAL: " + ratio_note(wx, wy, "меньше", xname=xname)
+                        note += "; WAL: " + ratio_note(wx, wy, "меньше", xname=xname, yname=yname)
                     out.append(f"| {var} | {ds} | {tx} | {ty} | {tup(x)} | {tup(y)} | {wal(x)} | {wal(y)} | "
                                f"{size(x)} | {size(y)} | {note} |")
                 else:
@@ -132,7 +136,8 @@ class Command(BaseCommand):
             if f"bench_{ds}" not in dbs:
                 continue
             c = connect(f"bench_{ds}")
-            for m, tables in MODEL_TABLES.items():
+            # X(б) и X·lat хранятся в таблицах X — их размер не отдельная строка
+            for m, tables in ((k, v) for k, v in MODEL_TABLES.items() if k in ("X", "Y", "Y2", "общая")):
                 r = c.execute("SELECT sum(c.reltuples)::bigint, sum(pg_relation_size(c.oid)), sum(pg_indexes_size(c.oid)), "
                               "sum(pg_total_relation_size(c.oid)) FROM pg_class c WHERE relname = ANY(%s)",
                               (tables,)).fetchone()
@@ -169,7 +174,7 @@ class Command(BaseCommand):
         """Компактная таблица «сценарий x датасет» (p50, X / Y) в README между маркерами."""
         dss = [d for d in DS_ORDER if any(d == k[1] for sc in by_sc.values() for k in sc)]
         head = "| сценарий | " + " | ".join(dss) + " |"
-        lines = ["Ячейка — p50 «X / Y». Профиль истории: t1/t5/t20 — исходный (ежемесячно один тип + "
+        lines = ["Ячейка — p50 «X / Y» или «X / Y / Y2» (Y2 — Y без обновления старых записей). Профиль истории: t1/t5/t20 — исходный (ежемесячно один тип + "
                  "ежеквартально все типы), t1s/t5s/t20s — только по одному типу. Полные таблицы с p95, "
                  "строками, WAL, Δ размера и выводами — `results/REPORT.md`.", "",
                  head, "|" + "---|" * (len(dss) + 1)]
@@ -177,11 +182,13 @@ class Command(BaseCommand):
             cells = []
             for ds in dss:
                 r = by_sc.get(sc, {}).get((var, ds), {})
-                x, y = r.get("X", {}).get("p50"), r.get("Y", {}).get("p50")
-                cells.append(f"{ms(x)} / {ms(y)}" if x or y else "—")
+                x, y, y2 = (r.get(m, {}).get("p50") for m in ("X", "Y", "Y2"))
+                cell = f"{ms(x)} / {ms(y)}" if x or y else "—"
+                cells.append(cell + (f" / {ms(y2)}" if y2 else ""))
             if any(c != "—" for c in cells):
                 lines.append(f"| {title} | " + " | ".join(cells) + " |")
-        cells = [f"{kb(sizes.get((ds, 'X')))} / {kb(sizes.get((ds, 'Y')))}" if (ds, "X") in sizes else "—"
+        cells = [(f"{kb(sizes.get((ds, 'X')))} / {kb(sizes.get((ds, 'Y')))}"
+                  + (f" / {kb(sizes[(ds, 'Y2')])}" if (ds, "Y2") in sizes else "")) if (ds, "X") in sizes else "—"
                  for ds in dss]
         lines.append("| Размер после года (heap+индексы) | " + " | ".join(cells) + " |")
         readme = Path(settings.BASE_DIR) / "README.md"

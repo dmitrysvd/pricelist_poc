@@ -1,8 +1,8 @@
-Limit  (cost=0.85..443.83 rows=50 width=164) (actual time=0.052..0.843 rows=50.00 loops=1)
+Limit  (cost=0.85..443.83 rows=50 width=164) (actual time=0.035..0.655 rows=50.00 loops=1)
   Buffers: shared hit=667
-  ->  Nested Loop Anti Join  (cost=0.85..506667.67 rows=57189 width=164) (actual time=0.051..0.839 rows=50.00 loops=1)
+  ->  Nested Loop Anti Join  (cost=0.85..506667.67 rows=57189 width=164) (actual time=0.034..0.651 rows=50.00 loops=1)
         Buffers: shared hit=667
-        ->  Index Only Scan using service_page_idx on service s  (cost=0.42..3027.59 rows=76955 width=100) (actual time=0.010..0.035 rows=136.00 loops=1)
+        ->  Index Only Scan using service_page_idx on service s  (cost=0.42..3027.59 rows=76955 width=100) (actual time=0.005..0.025 rows=136.00 loops=1)
               Index Cond: ((branch_id = '1'::smallint) AND (ROW(category_sort, code, name, id) > ROW('95'::smallint, 'A0095.007999'::text, 'Услуга 007999 приём/исследование/процедура'::text, '8000'::smallint)))
               Heap Fetches: 0
               Index Searches: 1
@@ -14,9 +14,9 @@ Limit  (cost=0.85..443.83 rows=50 width=164) (actual time=0.052..0.843 rows=50.0
               Index Searches: 136
               Buffers: shared hit=409
         SubPlan 1
-          ->  Aggregate  (cost=2.91..2.92 rows=1 width=32) (actual time=0.011..0.011 rows=1.00 loops=50)
+          ->  Aggregate  (cost=2.91..2.92 rows=1 width=32) (actual time=0.008..0.008 rows=1.00 loops=50)
                 Buffers: shared hit=151
-                ->  Index Only Scan using y_value_actual_uq on y_value v_1  (cost=0.43..2.88 rows=14 width=15) (actual time=0.001..0.003 rows=12.06 loops=50)
+                ->  Index Only Scan using y_value_actual_uq on y_value v_1  (cost=0.43..2.88 rows=14 width=15) (actual time=0.001..0.002 rows=12.06 loops=50)
                       Index Cond: (service_id = s.id)
                       Filter: (value IS NOT NULL)
                       Heap Fetches: 0
@@ -37,5 +37,5 @@ Limit  (cost=0.85..443.83 rows=50 width=164) (actual time=0.052..0.843 rows=50.0
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
 Planning:
   Buffers: shared hit=30
-Planning Time: 0.254 ms
-Execution Time: 0.865 ms
+Planning Time: 0.284 ms
+Execution Time: 0.677 ms

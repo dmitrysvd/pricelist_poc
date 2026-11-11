@@ -1,0 +1,21 @@
+Nested Loop Left Join  (cost=1.27..7.93 rows=1 width=110) (actual time=0.010..0.011 rows=1.00 loops=1)
+  Buffers: shared hit=11
+  ->  Nested Loop  (cost=0.84..5.28 rows=1 width=103) (actual time=0.008..0.009 rows=1.00 loops=1)
+        Buffers: shared hit=8
+        ->  Index Scan using service_pkey on service s  (cost=0.42..2.64 rows=1 width=96) (actual time=0.003..0.004 rows=1.00 loops=1)
+              Index Cond: (id = ANY ('{64293}'::integer[]))
+              Index Searches: 1
+              Buffers: shared hit=4
+        ->  Index Scan using y3_current_pkey on y3_current m  (cost=0.42..2.64 rows=1 width=15) (actual time=0.004..0.004 rows=1.00 loops=1)
+              Index Cond: ((service_id = s.id) AND (price_type_id = '1'::smallint))
+              Index Searches: 1
+              Buffers: shared hit=4
+  ->  Index Scan using y3_current_pkey on y3_current i  (cost=0.42..2.64 rows=1 width=15) (actual time=0.001..0.001 rows=0.00 loops=1)
+        Index Cond: ((service_id = s.id) AND (price_type_id = '2'::smallint))
+        Index Searches: 1
+        Buffers: shared hit=3
+Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
+Planning:
+  Buffers: shared hit=32
+Planning Time: 0.158 ms
+Execution Time: 0.021 ms

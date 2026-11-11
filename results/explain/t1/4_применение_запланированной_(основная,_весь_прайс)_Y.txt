@@ -1,26 +1,26 @@
-Update on y_value a  (cost=25839.60..42736.82 rows=0 width=0) (actual time=683.204..683.206 rows=0.00 loops=1)
-  Buffers: shared hit=1446377 read=1 dirtied=1440 written=1439
-  I/O Timings: shared read=0.005 write=8.281
-  WAL: records=509351 fpi=1 bytes=41528169 buffers full=1960
-  ->  Hash Join  (cost=25839.60..42736.82 rows=146821 width=28) (actual time=36.875..75.514 rows=84500.00 loops=1)
+Update on y_value a  (cost=25997.47..42747.54 rows=0 width=0) (actual time=713.388..713.390 rows=0.00 loops=1)
+  Buffers: shared hit=1448755 dirtied=960 written=960
+  I/O Timings: shared write=5.918
+  WAL: records=509810 bytes=41539538 buffers full=166
+  ->  Hash Join  (cost=25997.47..42747.54 rows=147755 width=28) (actual time=37.143..76.079 rows=84500.00 loops=1)
         Hash Cond: ((s.service_id = a.service_id) AND (s.price_type_id = a.price_type_id))
         Buffers: shared hit=4240
-        ->  Index Scan using y_value_version_idx on y_value s  (cost=0.43..11093.74 rows=91278 width=30) (actual time=0.008..15.698 rows=84500.00 loops=1)
+        ->  Index Scan using y_value_version_idx on y_value s  (cost=0.43..10956.85 rows=86322 width=30) (actual time=0.007..16.417 rows=84500.00 loops=1)
               Index Cond: (version_id = '786'::smallint)
               Index Searches: 1
               Buffers: shared hit=862
-        ->  Hash  (cost=23239.52..23239.52 rows=173310 width=22) (actual time=36.756..36.756 rows=170000.00 loops=1)
+        ->  Hash  (cost=23312.06..23312.06 rows=178999 width=22) (actual time=37.023..37.023 rows=170000.00 loops=1)
               Buckets: 262144  Batches: 1  Memory Usage: 11345kB
               Buffers: shared hit=3378
-              ->  Bitmap Heap Scan on y_value a  (cost=2702.15..23239.52 rows=173310 width=22) (actual time=4.336..17.708 rows=170000.00 loops=1)
+              ->  Bitmap Heap Scan on y_value a  (cost=2703.57..23312.06 rows=178999 width=22) (actual time=4.524..18.066 rows=170000.00 loops=1)
                     Recheck Cond: ((status)::text = 'A'::text)
                     Heap Blocks: exact=1741
                     Buffers: shared hit=3378
-                    ->  Bitmap Index Scan on y_value_actual_uq  (cost=0.00..2658.82 rows=173310 width=0) (actual time=4.206..4.206 rows=170000.00 loops=1)
+                    ->  Bitmap Index Scan on y_value_actual_uq  (cost=0.00..2658.82 rows=178999 width=0) (actual time=4.389..4.389 rows=170000.00 loops=1)
                           Index Searches: 1
                           Buffers: shared hit=1637
 Settings: effective_cache_size = '24GB', work_mem = '64MB', jit = 'off', random_page_cost = '1.1', max_parallel_workers_per_gather = '4'
 Planning:
-  Buffers: shared hit=73
-Planning Time: 0.224 ms
-Execution Time: 683.818 ms
+  Buffers: shared hit=31
+Planning Time: 0.180 ms
+Execution Time: 714.024 ms

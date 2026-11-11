@@ -75,23 +75,31 @@ class Command(BaseCommand):
             with conn.cursor() as cur:
                 ctx = load_ctx(cur)
                 from model_x.impl_b import XModelB, XModelLat
+                from model_y2.impl import Y2Model
                 y = YModel()
-                xs = [XModel(), XModelB(), XModelLat()]
+                from model_y3.impl import Y3Model
+                xs = [XModel(), XModelB(), XModelLat(), Y2Model()]
+                cur.execute("SELECT to_regclass('y3_current') IS NOT NULL AND EXISTS (SELECT 1 FROM y3_current)")
+                from model_y.impl_sq import Y3ModelSq, YModelSq
+                xs.append(YModelSq())
+                if cur.fetchone()[0]:
+                    xs += [Y3Model(), Y3ModelSq()]
                 for xm in xs:
                     xm.main_type = ctx.main
                 for (sc, variant, make), x in ((t, xm) for t in read_scenarios(ctx, o["n"]) for xm in xs):
                     if getattr(x, "only_scenarios", None) and sc not in x.only_scenarios:
                         continue
-                    if x.name != "X" and sc not in x.only_scenarios:
+                    if x.name not in ("X", "Y2", "Y3") and sc not in getattr(x, "only_scenarios", ()):
                         continue
                     variant = f"{variant} [{x.name}]"
                     diffs = 0
                     for ox, oy in list(zip(make(x), make(y)))[:o["n"]]:
                         res = {}
-                        for name, op in (("X", ox), ("Y", oy)):
+                        # Y2 возвращает данные в форме Y, X-варианты — в форме X
+                        for name, shape, op in (("X", "Y" if x.name.startswith("Y") else "X", ox), ("Y", "Y", oy)):
                             for st in op.steps:
                                 cur.execute(st.sql, st.params)
-                            res[name] = norm(sc, name, cur.fetchall(), [d.name for d in cur.description], ctx)
+                            res[name] = norm(sc, shape, cur.fetchall(), [d.name for d in cur.description], ctx)
                         if res["X"] != res["Y"]:
                             diffs += 1
                             if diffs == 1:
